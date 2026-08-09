@@ -7,6 +7,7 @@ import type {
   Employee,
   ITTicket,
   LeaveRequest,
+  MonthlyTargetState,
   NitaqatStatus,
   Part,
   PurchaseOrder,
@@ -255,7 +256,34 @@ export const CURRENT_OWNER_NAME = "صاحب الشركة";
 export const CUSTOMERS: Customer[] = [
   { id: "c1", name: "عبدالعزيز الفهد", phone: "0501112233", ownerSellerId: "e1" },
   { id: "c2", name: "تركي المالكي", phone: "0559998877", ownerSellerId: "e1" },
-  { id: "c3", name: "ورشة النخبة للسيارات", phone: "0521234567", ownerSellerId: "e4" },
+  {
+    id: "c3",
+    name: "ورشة النخبة للسيارات",
+    phone: "0521234567",
+    ownerSellerId: "e4",
+    taxNumber: "300123456700003",
+    crNumber: "1010456789",
+    street: "شارع الأمير سلطان",
+    district: "حي الروضة",
+    city: "جدة",
+    region: "منطقة مكة المكرمة",
+    postalCode: "23443",
+    buildingNumber: "7845",
+  },
+  {
+    id: "c5",
+    name: "مؤسسة الطريق السريع للصيانة",
+    phone: "0138812234",
+    ownerSellerId: "e1",
+    taxNumber: "300987654300003",
+    crNumber: "2050112233",
+    street: "طريق الملك فهد",
+    district: "حي العزيزية",
+    city: "الدمام",
+    region: "المنطقة الشرقية",
+    postalCode: "32241",
+    buildingNumber: "3312",
+  },
   { id: "c4", name: "زبون عابر", phone: "-", ownerSellerId: null },
 ];
 
@@ -346,7 +374,7 @@ export const EMPLOYEE_MANAGER_THREADS: Record<string, ChatMessage[]> = {
   e4: [{ id: "m1", author: "خالد الدوسري", role: "seller", time: "10:15", text: "ممكن أعرف سبب تأخر عمولة الشهر الماضي؟" }],
 };
 
-export const MONTHLY_TARGET = {
+export const MONTHLY_TARGET: MonthlyTargetState = {
   targetSar: 1_500_000,
   achievedSar: 1_015_000,
   branchBreakdown: [

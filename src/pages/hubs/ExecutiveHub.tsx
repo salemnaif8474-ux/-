@@ -1,14 +1,16 @@
 import { Link } from "react-router-dom";
+import { useData } from "../../context/DataContext";
 import { EMPLOYEES, PARTS, PURCHASE_ORDERS, SUPPLIERS } from "../../data/mockData";
 import { HubSection } from "../../components/HubSection";
 import { Pill } from "../../components/Pill";
 
 export function ExecutiveHub() {
+  const { monthlyTarget } = useData();
   const inventoryValue = PARTS.reduce(
     (sum, p) => sum + p.costPrice * p.stockByBranch.reduce((s, b) => s + b.available, 0),
     0,
   );
-  const revenue = 1_015_000;
+  const revenue = monthlyTarget.achievedSar;
   const cogs = 640_000;
   const grossProfit = revenue - cogs;
   const marginPct = Math.round((grossProfit / revenue) * 100);

@@ -89,6 +89,26 @@ export interface Customer {
   name: string;
   phone: string;
   ownerSellerId: string | null;
+  taxNumber?: string;
+  crNumber?: string;
+  street?: string;
+  district?: string;
+  city?: string;
+  region?: string;
+  postalCode?: string;
+  buildingNumber?: string;
+}
+
+export interface BranchTarget {
+  branch: string;
+  target: number;
+  achieved: number;
+}
+
+export interface MonthlyTargetState {
+  targetSar: number;
+  achievedSar: number;
+  branchBreakdown: BranchTarget[];
 }
 
 export interface BranchStock {

@@ -1,5 +1,6 @@
 import { useAuth } from "../context/AuthContext";
-import { CHAT_DEFS, CHAT_MESSAGES, EMPLOYEES, MONTHLY_TARGET, ROLE_HOME_HINT } from "../data/mockData";
+import { useData } from "../context/DataContext";
+import { CHAT_DEFS, CHAT_MESSAGES, EMPLOYEES, ROLE_HOME_HINT } from "../data/mockData";
 import { Link } from "react-router-dom";
 import { RatingBadge } from "../components/RatingBadge";
 import { ROLE_LABELS } from "../types";
@@ -12,9 +13,10 @@ const ACTION_SOURCES: { key: keyof typeof CHAT_MESSAGES; label: string; to: stri
 
 export function Dashboard() {
   const { currentEmployee } = useAuth();
+  const { monthlyTarget } = useData();
   if (!currentEmployee) return null;
 
-  const pct = Math.round((MONTHLY_TARGET.achievedSar / MONTHLY_TARGET.targetSar) * 100);
+  const pct = Math.round((monthlyTarget.achievedSar / monthlyTarget.targetSar) * 100);
 
   const actionItems = ACTION_SOURCES.map((src) => ({
     ...src,
@@ -55,7 +57,7 @@ export function Dashboard() {
               <div className="h-full rounded-full bg-brand-600" style={{ width: `${Math.min(pct, 100)}%` }} />
             </div>
             <div className="mt-2 text-xs text-neutral-400 tabular-nums">
-              {MONTHLY_TARGET.achievedSar.toLocaleString()} / {MONTHLY_TARGET.targetSar.toLocaleString()} ريال
+              {monthlyTarget.achievedSar.toLocaleString()} / {monthlyTarget.targetSar.toLocaleString()} ريال
             </div>
           </div>
         )}
@@ -109,7 +111,7 @@ export function Dashboard() {
         <div className="rounded-xl border border-brand-100 bg-white p-5">
           <div className="mb-3 text-sm font-bold text-neutral-700">أداء الفروع مقابل الهدف</div>
           <div className="space-y-3">
-            {MONTHLY_TARGET.branchBreakdown.map((b) => {
+            {monthlyTarget.branchBreakdown.map((b) => {
               const bp = Math.round((b.achieved / b.target) * 100);
               return (
                 <div key={b.branch}>

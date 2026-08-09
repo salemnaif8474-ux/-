@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CUSTOMERS, EMPLOYEES, PARTS } from "../data/mockData";
+import { useData } from "../context/DataContext";
+import { EMPLOYEES, PARTS } from "../data/mockData";
 import { ROLE_LABELS } from "../types";
 
 interface Result {
@@ -11,6 +12,7 @@ interface Result {
 }
 
 export function GlobalSearch() {
+  const { customers } = useData();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -24,12 +26,20 @@ export function GlobalSearch() {
       (e) => e.fullName.includes(q) || e.username.includes(q) || e.employeeNumber.includes(q),
     ).map((e) => ({ key: `emp-${e.id}`, label: e.fullName, sublabel: `موظف · ${ROLE_LABELS[e.role]}`, to: "/employees" }));
 
-    const customerResults: Result[] = CUSTOMERS.filter((c) => c.name.includes(q) || c.phone.includes(q)).map((c) => ({
-      key: `cust-${c.id}`,
-      label: c.name,
-      sublabel: "عميل",
-      to: "/customers",
-    }));
+    const customerResults: Result[] = customers
+      .filter(
+        (c) =>
+          c.name.includes(q) ||
+          c.phone.includes(q) ||
+          c.taxNumber?.includes(q) ||
+          c.crNumber?.includes(q),
+      )
+      .map((c) => ({
+        key: `cust-${c.id}`,
+        label: c.name,
+        sublabel: "عميل",
+        to: "/customers",
+      }));
 
     const partResults: Result[] = PARTS.filter((p) => p.name.includes(q) || p.partNumber.includes(q)).map((p) => ({
       key: `part-${p.id}`,

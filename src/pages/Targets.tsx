@@ -1,12 +1,45 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { EMPLOYEES, MONTHLY_TARGET, SELLER_PERFORMANCE } from "../data/mockData";
+import { useData } from "../context/DataContext";
+import { EMPLOYEES, SELLER_PERFORMANCE } from "../data/mockData";
 
 export function Targets() {
   const { currentEmployee } = useAuth();
-  const [newTarget, setNewTarget] = useState(String(MONTHLY_TARGET.targetSar));
-  const canEdit = currentEmployee?.role === "owner";
-  const canSeeLeaderboard = currentEmployee && ["owner", "branch_manager", "seller"].includes(currentEmployee.role);
+  const { monthlyTarget, updateCompanyTarget, updateBranchTarget } = useData();
+  const [companyInput, setCompanyInput] = useState(String(monthlyTarget.targetSar));
+  const [branchInputs, setBranchInputs] = useState<Record<string, string>>(() =>
+    Object.fromEntries(monthlyTarget.branchBreakdown.map((b) => [b.branch, String(b.target)])),
+  );
+  const [savedFlash, setSavedFlash] = useState<string | null>(null);
+
+  if (!currentEmployee) return null;
+
+  const canEditCompany = ["owner", "manager"].includes(currentEmployee.role);
+  const canSeeLeaderboard = ["owner", "manager", "branch_manager", "seller"].includes(currentEmployee.role);
+
+  function canEditBranch(branch: string) {
+    if (canEditCompany) return true;
+    return currentEmployee!.role === "branch_manager" && currentEmployee!.branch === branch;
+  }
+
+  function flash(label: string) {
+    setSavedFlash(label);
+    setTimeout(() => setSavedFlash(null), 2000);
+  }
+
+  function saveCompanyTarget() {
+    const value = Number(companyInput.replace(/[^\d]/g, ""));
+    if (!value || !currentEmployee) return;
+    updateCompanyTarget(value, currentEmployee.fullName);
+    flash("company");
+  }
+
+  function saveBranchTarget(branch: string) {
+    const value = Number((branchInputs[branch] ?? "").replace(/[^\d]/g, ""));
+    if (!value || !currentEmployee) return;
+    updateBranchTarget(branch, value, currentEmployee.fullName);
+    flash(branch);
+  }
 
   const leaderboard = [...SELLER_PERFORMANCE]
     .map((s) => ({
@@ -21,28 +54,32 @@ export function Targets() {
       <div>
         <h1 className="text-xl font-bold text-neutral-800">الهدف الشهري للمبيعات</h1>
         <p className="text-sm text-neutral-500">
-          {canEdit ? "بصفتك صاحب الشركة، أنت من يحدد هدف هذا الشهر لكل الفروع" : "تقدم كل فرع مقابل الهدف الذي حدده صاحب الشركة"}
+          {canEditCompany ? "بصفتك من الإدارة، أنت من يحدد هدف هذا الشهر لكل الفروع" : "تقدم كل فرع مقابل الهدف الذي حدده صاحب الشركة"}
         </p>
       </div>
 
-      {canEdit && (
+      {canEditCompany && (
         <div className="flex flex-col items-stretch gap-3 rounded-xl border border-brand-100 bg-white p-5 sm:flex-row sm:items-end">
           <div className="flex-1">
-            <label className="mb-1 block text-xs font-medium text-neutral-500">هدف الشهر (ريال)</label>
+            <label className="mb-1 block text-xs font-medium text-neutral-500">هدف الشهر (ريال) — كل الشركة</label>
             <input
-              value={newTarget}
-              onChange={(e) => setNewTarget(e.target.value)}
+              value={companyInput}
+              onChange={(e) => setCompanyInput(e.target.value)}
               className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm tabular-nums focus:border-brand-600 focus:outline-none"
             />
           </div>
-          <button className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700">
+          <button
+            onClick={saveCompanyTarget}
+            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700"
+          >
             حفظ الهدف
           </button>
+          {savedFlash === "company" && <span className="text-xs font-semibold text-status-good">تم الحفظ ✓</span>}
         </div>
       )}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {MONTHLY_TARGET.branchBreakdown.map((b) => {
+        {monthlyTarget.branchBreakdown.map((b) => {
           const pct = Math.round((b.achieved / b.target) * 100);
           return (
             <div key={b.branch} className="rounded-xl border border-brand-100 bg-white p-5">
@@ -54,6 +91,22 @@ export function Targets() {
               <div className="mt-2 text-xs text-neutral-400 tabular-nums">
                 {b.achieved.toLocaleString()} / {b.target.toLocaleString()} ريال
               </div>
+              {canEditBranch(b.branch) && (
+                <div className="mt-3 flex items-center gap-2 border-t border-neutral-100 pt-3">
+                  <input
+                    value={branchInputs[b.branch] ?? String(b.target)}
+                    onChange={(e) => setBranchInputs((prev) => ({ ...prev, [b.branch]: e.target.value }))}
+                    className="w-full rounded-lg border border-neutral-200 px-2 py-1.5 text-xs tabular-nums focus:border-brand-600 focus:outline-none"
+                  />
+                  <button
+                    onClick={() => saveBranchTarget(b.branch)}
+                    className="shrink-0 rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
+                  >
+                    حفظ
+                  </button>
+                </div>
+              )}
+              {savedFlash === b.branch && <div className="mt-1 text-xs font-semibold text-status-good">تم الحفظ ✓</div>}
             </div>
           );
         })}

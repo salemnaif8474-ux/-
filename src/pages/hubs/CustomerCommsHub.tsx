@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { CUSTOMERS, SALES_DOCS } from "../../data/mockData";
+import { useData } from "../../context/DataContext";
+import { SALES_DOCS } from "../../data/mockData";
 import { HubSection } from "../../components/HubSection";
 import { Pill } from "../../components/Pill";
 
@@ -9,6 +10,7 @@ const COMPLAINTS = [
 ];
 
 export function CustomerCommsHub() {
+  const { customers } = useData();
   return (
     <div className="space-y-6">
       <div>
@@ -22,7 +24,7 @@ export function CustomerCommsHub() {
       <HubSection title="تحديثات الطلبات" description="آخر حالة لكل طلب بيع نشط">
         <div className="space-y-2">
           {SALES_DOCS.filter((d) => d.type === "order").map((d) => {
-            const customer = CUSTOMERS.find((c) => c.id === d.customerId);
+            const customer = customers.find((c) => c.id === d.customerId);
             return (
               <div key={d.id} className="flex items-center justify-between rounded-lg border border-neutral-100 px-4 py-2.5 text-sm">
                 <span className="text-neutral-700">{d.number} — {customer?.name}</span>
@@ -55,7 +57,7 @@ export function CustomerCommsHub() {
             {SALES_DOCS.filter((d) => d.type === "quotation").map((d) => (
               <div key={d.id} className="flex justify-between border-b border-neutral-50 py-1">
                 <span className="text-neutral-600">{d.number}</span>
-                <span className="text-neutral-400">{CUSTOMERS.find((c) => c.id === d.customerId)?.name}</span>
+                <span className="text-neutral-400">{customers.find((c) => c.id === d.customerId)?.name}</span>
               </div>
             ))}
           </div>

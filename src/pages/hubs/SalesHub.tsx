@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { CUSTOMERS, PARTS, RETURN_REQUESTS, SALES_DOCS } from "../../data/mockData";
+import { useData } from "../../context/DataContext";
+import { PARTS, RETURN_REQUESTS, SALES_DOCS } from "../../data/mockData";
 import { HubSection } from "../../components/HubSection";
 import { Pill } from "../../components/Pill";
 
@@ -25,6 +26,7 @@ const DOC_STATUS_LABEL: Record<string, string> = {
 
 export function SalesHub() {
   const { currentEmployee } = useAuth();
+  const { customers } = useData();
   const [query, setQuery] = useState("");
 
   const filteredParts = useMemo(() => {
@@ -38,7 +40,7 @@ export function SalesHub() {
     : [];
 
   function customerName(id: string) {
-    return CUSTOMERS.find((c) => c.id === id)?.name ?? "-";
+    return customers.find((c) => c.id === id)?.name ?? "-";
   }
 
   return (
