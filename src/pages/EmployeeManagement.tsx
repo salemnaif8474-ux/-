@@ -1,0 +1,100 @@
+import { useState } from "react";
+import { EMPLOYEES } from "../data/mockData";
+import { ROLE_LABELS, type Employee } from "../types";
+import { RatingBadge } from "../components/RatingBadge";
+
+const STATUS_LABEL: Record<Employee["status"], { label: string; className: string }> = {
+  active: { label: "نشط", className: "bg-status-good-bg text-status-good" },
+  suspended: { label: "موقوف", className: "bg-status-bad-bg text-status-bad" },
+  leave: { label: "إجازة", className: "bg-status-warn-bg text-status-warn" },
+};
+
+export function EmployeeManagement() {
+  const [selected, setSelected] = useState<Employee | null>(null);
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-xl font-bold text-neutral-800">إدارة الموظفين والصلاحيات</h1>
+        <p className="text-sm text-neutral-500">بيانات كل موظف، دوره الوظيفي، وحالة حسابه</p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="overflow-hidden rounded-xl border border-brand-100 bg-white lg:col-span-2">
+          <table className="w-full text-right text-sm">
+            <thead className="bg-brand-50 text-xs text-brand-700">
+              <tr>
+                <th className="px-4 py-3 font-semibold">الموظف</th>
+                <th className="px-4 py-3 font-semibold">الدور</th>
+                <th className="px-4 py-3 font-semibold">الفرع</th>
+                <th className="px-4 py-3 font-semibold">الحالة</th>
+                <th className="px-4 py-3 font-semibold">التقييم</th>
+              </tr>
+            </thead>
+            <tbody>
+              {EMPLOYEES.map((emp) => (
+                <tr
+                  key={emp.id}
+                  onClick={() => setSelected(emp)}
+                  className="cursor-pointer border-t border-neutral-100 hover:bg-brand-50/40"
+                >
+                  <td className="px-4 py-3 font-medium text-neutral-800">{emp.fullName}</td>
+                  <td className="px-4 py-3 text-neutral-500">{ROLE_LABELS[emp.role]}</td>
+                  <td className="px-4 py-3 text-neutral-500">{emp.branch}</td>
+                  <td className="px-4 py-3">
+                    <span className={`rounded px-2 py-0.5 text-[11px] font-semibold ${STATUS_LABEL[emp.status].className}`}>
+                      {STATUS_LABEL[emp.status].label}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <RatingBadge rating={emp.rating} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="rounded-xl border border-brand-100 bg-white p-5">
+          {!selected ? (
+            <div className="text-sm text-neutral-400">اضغط على موظف من الجدول لعرض بياناته الكاملة وصلاحياته</div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <div className="font-bold text-neutral-800">{selected.fullName}</div>
+                <div className="text-xs text-neutral-400">رقم الموظف: {selected.employeeNumber}</div>
+              </div>
+              <dl className="space-y-2 text-sm">
+                <Row label="اسم المستخدم" value={selected.username} />
+                <Row label="الجوال" value={selected.phone} />
+                <Row label="الإيميل الشخصي" value={selected.personalEmail} />
+                <Row label="الدور الوظيفي" value={ROLE_LABELS[selected.role]} />
+                <Row label="الفرع" value={selected.branch} />
+                <Row label="تاريخ التعيين" value={selected.hireDate} />
+              </dl>
+              <div className="border-t border-neutral-100 pt-3">
+                <div className="mb-2 text-xs font-semibold text-neutral-500">الصلاحيات (يحددها المدير)</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {["الرئيسية", "الأهداف الشهرية", "المحادثات المتخصصة بدوره"].map((p) => (
+                    <span key={p} className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] text-neutral-600">
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between border-b border-neutral-50 pb-1.5">
+      <dt className="text-neutral-400">{label}</dt>
+      <dd className="font-medium text-neutral-700">{value}</dd>
+    </div>
+  );
+}

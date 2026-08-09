@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Tajawal", "Segoe UI", sans-serif;
+
+  /* Brand identity (deep maroon red) - used for header, nav, primary buttons */
+  --color-brand-50: #fdf2f2;
+  --color-brand-100: #fbdcdd;
+  --color-brand-600: #9e1b24;
+  --color-brand-700: #7c151c;
+  --color-brand-800: #5c0f14;
+
+  /* Semantic status colors (kept visually distinct from brand red) */
+  --color-status-bad: #e53935;
+  --color-status-bad-bg: #fdecea;
+  --color-status-warn: #fb8c00;
+  --color-status-warn-bg: #fff4e5;
+  --color-status-good: #43a047;
+  --color-status-good-bg: #e8f5e9;
+  --color-status-pending: #f4b400;
+}
+
+html {
+  direction: rtl;
+}
+
+body {
+  background-color: #ffffff;
+  color: #1f1315;
+  font-family: var(--font-sans);
+}
