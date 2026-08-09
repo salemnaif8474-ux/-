@@ -108,6 +108,7 @@ export function EmployeeManagement() {
                 <Row label="الدور الوظيفي" value={ROLE_LABELS[selected.role]} />
                 <Row label="الفرع" value={selected.branch} />
                 <Row label="تاريخ التعيين" value={selected.hireDate} />
+                <Row label="جهاز الدخول المرتبط" value={selected.boundDevice ?? "غير مسجّل"} />
               </dl>
               <div className="border-t border-neutral-100 pt-3">
                 <div className="mb-2 text-xs font-semibold text-neutral-500">الصلاحيات (يحددها المدير)</div>

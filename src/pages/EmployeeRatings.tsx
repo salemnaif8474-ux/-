@@ -8,6 +8,19 @@ const GROUPS: { key: RatingColor; title: string; hint: string; dot: string }[] =
   { key: "good", title: "موظفون ممتازون", hint: "يلتزمون بالتعليمات ويتعلمون من أخطائهم", dot: "bg-status-good" },
 ];
 
+const MONTH_DOT: Record<RatingColor, string> = {
+  good: "bg-status-good",
+  warn: "bg-status-warn",
+  bad: "bg-status-bad",
+};
+
+const MONTH_LABEL: Record<string, string> = {
+  "2026-05": "مايو",
+  "2026-06": "يونيو",
+  "2026-07": "يوليو",
+  "2026-08": "أغسطس",
+};
+
 export function EmployeeRatings() {
   return (
     <div className="space-y-6">
@@ -42,6 +55,19 @@ export function EmployeeRatings() {
                       <RatingBadge rating={emp.rating} />
                     </div>
                     <div className="mt-2 text-sm text-neutral-600">{emp.ratingNote}</div>
+                    {emp.monthlyRatings && emp.monthlyRatings.length > 0 && (
+                      <div className="mt-3 border-t border-neutral-100 pt-3">
+                        <div className="mb-1.5 text-xs font-semibold text-neutral-500">التقييم الشهري:</div>
+                        <div className="flex gap-3">
+                          {emp.monthlyRatings.map((m) => (
+                            <div key={m.month} className="flex flex-col items-center gap-1" title={m.note}>
+                              <span className={`h-3 w-3 rounded-full ${MONTH_DOT[m.rating]}`} />
+                              <span className="text-[10px] text-neutral-400">{MONTH_LABEL[m.month] ?? m.month}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     {emp.mistakesLog.length > 0 && (
                       <div className="mt-3 space-y-1 border-t border-neutral-100 pt-3">
                         <div className="text-xs font-semibold text-neutral-500">سجل الأخطاء:</div>

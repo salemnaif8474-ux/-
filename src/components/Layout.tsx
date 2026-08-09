@@ -11,9 +11,25 @@ interface NavItem {
   roles: Role[] | "all";
 }
 
+const ALL_ROLES: Role[] = [
+  "owner",
+  "manager",
+  "review",
+  "seller",
+  "preparer",
+  "branch_manager",
+  "purchasing",
+  "shortages",
+  "it",
+  "accountant",
+  "hr",
+  "customer_relations",
+];
+const ROLES_EXCEPT_PREPARER = ALL_ROLES.filter((r) => r !== "preparer");
+
 const NAV_ITEMS: NavItem[] = [
   { to: "/", label: "الرئيسية", roles: "all" },
-  { to: "/targets", label: "الأهداف الشهرية", roles: "all" },
+  { to: "/targets", label: "الأهداف الشهرية", roles: ROLES_EXCEPT_PREPARER },
   { to: "/chats", label: "المحادثات", roles: "all" },
   { to: "/customers", label: "عملائي", roles: ["seller", "owner", "manager", "branch_manager"] },
   { to: "/ratings", label: "تقييم الموظفين", roles: ["owner"] },

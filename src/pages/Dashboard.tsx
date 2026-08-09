@@ -2,6 +2,7 @@ import { useAuth } from "../context/AuthContext";
 import { CHAT_MESSAGES, EMPLOYEES, MONTHLY_TARGET, ROLE_HOME_HINT } from "../data/mockData";
 import { Link } from "react-router-dom";
 import { RatingBadge } from "../components/RatingBadge";
+import { ROLE_LABELS } from "../types";
 
 const ACTION_SOURCES: { key: keyof typeof CHAT_MESSAGES; label: string; to: string }[] = [
   { key: "price_changes", label: "طلبات تعديل أسعار بانتظار الموافقة", to: "/chats" },
@@ -21,6 +22,7 @@ export function Dashboard() {
   })).filter((a) => a.count > 0);
   const badEmployeesCount = EMPLOYEES.filter((e) => e.rating === "bad").length;
   const isExecutive = ["owner", "manager"].includes(currentEmployee.role);
+  const showTargets = currentEmployee.role !== "preparer";
 
   return (
     <div className="space-y-6">
@@ -29,17 +31,33 @@ export function Dashboard() {
         <p className="text-sm text-neutral-500">{ROLE_HOME_HINT[currentEmployee.role]}</p>
       </div>
 
+      <div className="rounded-xl border border-brand-100 bg-white p-5">
+        <div className="mb-3 text-sm font-bold text-neutral-700">بياناتك</div>
+        <dl className="grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
+          <InfoRow label="الاسم" value={currentEmployee.fullName} />
+          <InfoRow label="رقم الموظف" value={currentEmployee.employeeNumber} />
+          <InfoRow label="الدور الوظيفي" value={ROLE_LABELS[currentEmployee.role]} />
+          <InfoRow label="الفرع" value={currentEmployee.branch} />
+          <InfoRow label="الجوال" value={currentEmployee.phone} />
+          <InfoRow label="الإيميل الشخصي" value={currentEmployee.personalEmail} />
+          <InfoRow label="تاريخ التعيين" value={currentEmployee.hireDate} />
+          <InfoRow label="اسم المستخدم" value={currentEmployee.username} />
+        </dl>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-xl border border-brand-100 bg-white p-5">
-          <div className="text-xs text-neutral-400">هدف الشهر (كل الشركة)</div>
-          <div className="mt-1 text-2xl font-bold text-brand-700 tabular-nums">{pct}%</div>
-          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-neutral-100">
-            <div className="h-full rounded-full bg-brand-600" style={{ width: `${Math.min(pct, 100)}%` }} />
+        {showTargets && (
+          <div className="rounded-xl border border-brand-100 bg-white p-5">
+            <div className="text-xs text-neutral-400">هدف الشهر (كل الشركة)</div>
+            <div className="mt-1 text-2xl font-bold text-brand-700 tabular-nums">{pct}%</div>
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-neutral-100">
+              <div className="h-full rounded-full bg-brand-600" style={{ width: `${Math.min(pct, 100)}%` }} />
+            </div>
+            <div className="mt-2 text-xs text-neutral-400 tabular-nums">
+              {MONTHLY_TARGET.achievedSar.toLocaleString()} / {MONTHLY_TARGET.targetSar.toLocaleString()} ريال
+            </div>
           </div>
-          <div className="mt-2 text-xs text-neutral-400 tabular-nums">
-            {MONTHLY_TARGET.achievedSar.toLocaleString()} / {MONTHLY_TARGET.targetSar.toLocaleString()} ريال
-          </div>
-        </div>
+        )}
 
         <Link to="/chats" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
           <div className="text-xs text-neutral-400">المحادثات</div>
@@ -107,6 +125,15 @@ export function Dashboard() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between border-b border-neutral-50 pb-1 tabular-nums sm:block sm:border-0 sm:pb-0">
+      <dt className="text-neutral-400">{label}</dt>
+      <dd className="font-medium text-neutral-700">{value}</dd>
     </div>
   );
 }

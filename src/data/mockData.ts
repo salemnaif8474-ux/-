@@ -31,6 +31,13 @@ export const EMPLOYEES: Employee[] = [
     rating: "good",
     ratingNote: "يلتزم بالتعليمات ويتعلم من أخطائه بسرعة",
     mistakesLog: [{ date: "2026-05-10", note: "خطأ بسيط بفاتورة، تم تصحيحه فورًا وما تكرر" }],
+    monthlyRatings: [
+      { month: "2026-05", rating: "warn", note: "خطأ بفاتورة، لكن تم تصحيحه فورًا" },
+      { month: "2026-06", rating: "good", note: "التزام كامل بالتعليمات" },
+      { month: "2026-07", rating: "good", note: "تحسن ملحوظ بسرعة الإنجاز" },
+      { month: "2026-08", rating: "good", note: "أفضل بائع بالفرع هذا الشهر" },
+    ],
+    boundDevice: "iPhone 13 — جوال العمل المسجّل",
   },
   {
     id: "e2",
@@ -50,6 +57,13 @@ export const EMPLOYEES: Employee[] = [
       { date: "2026-05-20", note: "نفس الخطأ تكرر" },
       { date: "2026-06-30", note: "نقص بالكمية المجهزة" },
     ],
+    monthlyRatings: [
+      { month: "2026-05", rating: "bad", note: "تكرار نفس خطأ التجهيز" },
+      { month: "2026-06", rating: "bad", note: "نقص بالكمية المجهزة" },
+      { month: "2026-07", rating: "bad", note: "بدون تحسن، نفس نمط الأخطاء" },
+      { month: "2026-08", rating: "bad", note: "لا يزال يكرر نفس الأخطاء" },
+    ],
+    boundDevice: "Samsung A54 — جوال العمل المسجّل",
   },
   {
     id: "e3",
@@ -65,6 +79,13 @@ export const EMPLOYEES: Employee[] = [
     rating: "good",
     ratingNote: "إدارة فرع منظمة ومتابعة جيدة للفريق",
     mistakesLog: [],
+    monthlyRatings: [
+      { month: "2026-05", rating: "good", note: "-" },
+      { month: "2026-06", rating: "good", note: "-" },
+      { month: "2026-07", rating: "good", note: "-" },
+      { month: "2026-08", rating: "good", note: "-" },
+    ],
+    boundDevice: "iPhone 14 — جوال العمل المسجّل",
   },
   {
     id: "e4",
@@ -80,6 +101,13 @@ export const EMPLOYEES: Employee[] = [
     rating: "warn",
     ratingNote: "أداء متذبذب، أحيانًا ملتزم وأحيانًا يخطئ بالأسعار",
     mistakesLog: [{ date: "2026-06-05", note: "أدخل سعر قطعة خاطئ بدون مراجعة" }],
+    monthlyRatings: [
+      { month: "2026-05", rating: "good", note: "-" },
+      { month: "2026-06", rating: "bad", note: "خطأ سعر بدون مراجعة" },
+      { month: "2026-07", rating: "warn", note: "تحسن جزئي" },
+      { month: "2026-08", rating: "warn", note: "لا يزال متذبذب" },
+    ],
+    boundDevice: null,
   },
   {
     id: "e5",

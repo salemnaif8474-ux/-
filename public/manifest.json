@@ -1,0 +1,17 @@
+{
+  "name": "نظام إدارة شركة قطع غيار السيارات",
+  "short_name": "قطع غيار",
+  "description": "نظام داخلي لموظفي الشركة",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#faf6f5",
+  "theme_color": "#8f1d24",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

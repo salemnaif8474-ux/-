@@ -75,6 +75,9 @@ export function Login() {
             />
           </div>
           {error && <div className="text-xs font-medium text-status-bad">{error}</div>}
+          <p className="text-[11px] leading-relaxed text-neutral-400">
+            حسابك مربوط بجهاز جوال العمل المسجّل فقط — الدخول من جهاز آخر يحتاج موافقة IT
+          </p>
           <button
             type="submit"
             className="w-full rounded-lg bg-brand-600 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700"

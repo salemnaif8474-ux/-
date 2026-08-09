@@ -36,24 +36,46 @@ export function Profile() {
           {currentEmployee.role !== "owner" && (
             <div className="mt-4 rounded-lg bg-neutral-50 p-4 text-sm text-neutral-600">{currentEmployee.ratingNote}</div>
           )}
+          {currentEmployee.role === "owner" && (
+            <div className="mt-4 rounded-lg bg-brand-50 p-4 text-sm text-brand-700">
+              حسابك بوضع اطلاع فقط (Read-Only) على كل عمليات البيع اليومية — تقدر تعتمد أو ترفض العمليات
+              الحساسة من مركز الموافقات، بدون صلاحية تنفيذ مباشر مثل البيع
+            </div>
+          )}
         </div>
 
-        <div className="rounded-xl border border-brand-100 bg-white p-5">
-          <div className="mb-3 text-sm font-bold text-neutral-700">الأقسام المتاحة لك</div>
-          <div className="space-y-2">
-            {PERMISSION_MODULES.map((m) => {
-              const allowed = myPermissions.includes(m.key);
-              return (
-                <div key={m.key} className="flex items-center justify-between rounded-lg border border-neutral-100 px-3 py-2 text-sm">
-                  <span className={allowed ? "text-neutral-700" : "text-neutral-400"}>{m.label}</span>
-                  <span className={`text-xs font-semibold ${allowed ? "text-status-good" : "text-neutral-400"}`}>
-                    {allowed ? "مفعّل" : "غير متاح"}
-                  </span>
-                </div>
-              );
-            })}
+        <div className="space-y-4">
+          <div className="rounded-xl border border-brand-100 bg-white p-5">
+            <div className="mb-3 text-sm font-bold text-neutral-700">الأقسام المتاحة لك</div>
+            <div className="space-y-2">
+              {PERMISSION_MODULES.map((m) => {
+                const allowed = myPermissions.includes(m.key);
+                return (
+                  <div key={m.key} className="flex items-center justify-between rounded-lg border border-neutral-100 px-3 py-2 text-sm">
+                    <span className={allowed ? "text-neutral-700" : "text-neutral-400"}>{m.label}</span>
+                    <span className={`text-xs font-semibold ${allowed ? "text-status-good" : "text-neutral-400"}`}>
+                      {allowed ? "مفعّل" : "غير متاح"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-3 text-xs text-neutral-400">لتعديل صلاحياتك تواصل مع الإدارة أو IT</div>
           </div>
-          <div className="mt-3 text-xs text-neutral-400">لتعديل صلاحياتك تواصل مع الإدارة أو IT</div>
+
+          <div className="rounded-xl border border-brand-100 bg-white p-5">
+            <div className="mb-2 text-sm font-bold text-neutral-700">جهاز الدخول المرتبط</div>
+            {currentEmployee.boundDevice ? (
+              <>
+                <div className="text-sm text-neutral-700">{currentEmployee.boundDevice}</div>
+                <div className="mt-1 text-xs text-neutral-400">
+                  حسابك مربوط بهذا الجهاز فقط لأمان أعلى — لتغييره تواصل مع IT
+                </div>
+              </>
+            ) : (
+              <div className="text-xs text-neutral-400">لا يوجد جهاز مسجّل بعد لهذا الحساب</div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -29,6 +29,12 @@ export const ROLE_LABELS: Record<Role, string> = {
 
 export type RatingColor = "good" | "warn" | "bad";
 
+export interface MonthlyRating {
+  month: string;
+  rating: RatingColor;
+  note: string;
+}
+
 export interface Employee {
   id: string;
   fullName: string;
@@ -43,6 +49,8 @@ export interface Employee {
   rating: RatingColor;
   ratingNote: string;
   mistakesLog: { date: string; note: string }[];
+  monthlyRatings?: MonthlyRating[];
+  boundDevice?: string | null;
 }
 
 export type ChatKey =
