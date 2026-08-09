@@ -1,20 +1,11 @@
 import { PARTS } from "../../data/mockData";
 import { HubSection } from "../../components/HubSection";
 import { Pill } from "../../components/Pill";
+import { computeShortages, computeTransferCandidates, suggestedReorderQty } from "../../lib/inventory";
 
 export function ShortagesHub() {
-  const shortages = PARTS.flatMap((p) =>
-    p.stockByBranch
-      .filter((b) => b.available <= p.reorderPoint)
-      .map((b) => ({ part: p, branch: b })),
-  );
-
-  const transferCandidates = PARTS.flatMap((p) => {
-    const short = p.stockByBranch.filter((b) => b.available <= p.reorderPoint);
-    const surplus = p.stockByBranch.filter((b) => b.available > p.reorderPoint * 1.5);
-    if (short.length === 0 || surplus.length === 0) return [];
-    return short.map((s) => ({ part: p, from: surplus[0], to: s }));
-  });
+  const shortages = computeShortages(PARTS);
+  const transferCandidates = computeTransferCandidates(PARTS);
 
   return (
     <div className="space-y-6">
@@ -53,7 +44,7 @@ export function ShortagesHub() {
                     <td className="px-3 py-2 tabular-nums text-neutral-500">{part.reorderPoint}</td>
                     <td className="px-3 py-2 tabular-nums text-neutral-500">{part.safetyStock}</td>
                     <td className="px-3 py-2 tabular-nums font-semibold text-brand-700">
-                      {Math.max(part.reorderPoint * 2 - branch.available, part.safetyStock)}
+                      {suggestedReorderQty(part, branch.available)}
                     </td>
                   </tr>
                 ))}

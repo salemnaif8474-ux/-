@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { DEFAULT_PERMISSIONS_BY_ROLE, EMPLOYEES, PERMISSION_MODULES } from "../data/mockData";
 import { ROLE_LABELS, type Employee } from "../types";
 import { RatingBadge } from "../components/RatingBadge";
+import { exportToCsv } from "../lib/exportCsv";
 
 const STATUS_LABEL: Record<Employee["status"], { label: string; className: string }> = {
   active: { label: "نشط", className: "bg-status-good-bg text-status-good" },
@@ -33,11 +34,35 @@ export function EmployeeManagement() {
     });
   }
 
+  function handleExport() {
+    exportToCsv(
+      "الموظفون",
+      filtered.map((e) => ({
+        الاسم: e.fullName,
+        "رقم الموظف": e.employeeNumber,
+        اليوزر: e.username,
+        الجوال: e.phone,
+        الدور: ROLE_LABELS[e.role],
+        الفرع: e.branch,
+        الحالة: STATUS_LABEL[e.status].label,
+        التقييم: e.rating,
+      })),
+    );
+  }
+
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold text-neutral-800">إدارة الموظفين والصلاحيات</h1>
-        <p className="text-sm text-neutral-500">بيانات كل موظف، دوره الوظيفي، وحالة حسابه — والصلاحيات التي يحددها المدير</p>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h1 className="text-xl font-bold text-neutral-800">إدارة الموظفين والصلاحيات</h1>
+          <p className="text-sm text-neutral-500">بيانات كل موظف، دوره الوظيفي، وحالة حسابه — والصلاحيات التي يحددها المدير</p>
+        </div>
+        <button
+          onClick={handleExport}
+          className="rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
+        >
+          تصدير CSV
+        </button>
       </div>
 
       <input

@@ -51,6 +51,7 @@ export interface Employee {
   mistakesLog: { date: string; note: string }[];
   monthlyRatings?: MonthlyRating[];
   boundDevice?: string | null;
+  iqamaExpiry?: string;
 }
 
 export type ChatKey =
@@ -79,6 +80,8 @@ export interface ChatMessage {
   text: string;
   status?: "pending" | "resolved" | "approved" | "mismatch";
   hasAttachment?: boolean;
+  attachmentName?: string;
+  attachmentUrl?: string;
 }
 
 export interface Customer {
@@ -189,4 +192,19 @@ export interface ApprovalRequest {
   amount: number;
   status: "pending" | "approved" | "rejected";
   date: string;
+}
+
+export interface LeaveRequest {
+  id: string;
+  employeeId: string;
+  type: "annual" | "sick" | "emergency";
+  fromDate: string;
+  toDate: string;
+  status: "pending" | "approved" | "rejected";
+}
+
+export interface NitaqatStatus {
+  band: "platinum" | "high_green" | "medium_green" | "low_green" | "red";
+  saudizationPct: number;
+  requiredPct: number;
 }

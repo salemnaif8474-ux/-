@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
-import { AUDIT_LOG } from "../../data/mockData";
+import { useData } from "../../context/DataContext";
 import { HubSection } from "../../components/HubSection";
 import { Pill } from "../../components/Pill";
+import { exportToCsv } from "../../lib/exportCsv";
 
 const CATEGORIES = [
   "تدقيق المبيعات",
@@ -22,10 +23,27 @@ const RESULT_LABEL = { flagged: "بحاجة متابعة", cleared: "سليم", 
 const RESULT_TONE = { flagged: "bad", cleared: "good", pending: "warn" } as const;
 
 export function AuditHub() {
+  const { auditLog } = useData();
   const [category, setCategory] = useState<string>("all");
-  const entries = category === "all" ? AUDIT_LOG : AUDIT_LOG.filter((e) => e.category === category);
+  const entries = category === "all" ? auditLog : auditLog.filter((e) => e.category === category);
 
-  const presentCategories = useMemo(() => new Set(AUDIT_LOG.map((e) => e.category)), []);
+  const presentCategories = useMemo(() => new Set(auditLog.map((e) => e.category)), [auditLog]);
+
+  function handleExport() {
+    exportToCsv(
+      "سجل-التدقيق",
+      entries.map((e) => ({
+        الفئة: e.category,
+        من: e.who,
+        الوقت: e.when,
+        الإجراء: e.action,
+        قبل: e.before,
+        بعد: e.after,
+        الاعتماد: e.approvedBy,
+        النتيجة: e.result,
+      })),
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -63,7 +81,18 @@ export function AuditHub() {
         </div>
       </HubSection>
 
-      <HubSection title="سجل التدقيق" description="Who → What → When → Before → After → Approval → Result">
+      <HubSection
+        title="سجل التدقيق"
+        description="Who → What → When → Before → After → Approval → Result"
+        action={
+          <button
+            onClick={handleExport}
+            className="rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
+          >
+            تصدير CSV
+          </button>
+        }
+      >
         <div className="table-scroll overflow-x-auto">
           <table className="w-full min-w-[760px] text-right text-sm">
             <thead className="bg-brand-50 text-xs text-brand-700">

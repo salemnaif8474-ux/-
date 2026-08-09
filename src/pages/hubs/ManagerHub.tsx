@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { APPROVAL_REQUESTS } from "../../data/mockData";
+import { useAuth } from "../../context/AuthContext";
+import { useData } from "../../context/DataContext";
 import { HubSection } from "../../components/HubSection";
 import { Pill } from "../../components/Pill";
 import type { ApprovalRequest } from "../../types";
@@ -15,12 +15,13 @@ const KIND_LABEL: Record<ApprovalRequest["kind"], string> = {
 };
 
 export function ManagerHub() {
-  const [requests, setRequests] = useState(APPROVAL_REQUESTS);
-  const pending = requests.filter((r) => r.status === "pending");
-  const decided = requests.filter((r) => r.status !== "pending");
+  const { currentEmployee } = useAuth();
+  const { approvals, decideApproval } = useData();
+  const pending = approvals.filter((r) => r.status === "pending");
+  const decided = approvals.filter((r) => r.status !== "pending");
 
   function decide(id: string, status: "approved" | "rejected") {
-    setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+    decideApproval(id, status, currentEmployee?.fullName ?? "غير معروف");
   }
 
   return (
@@ -94,12 +95,12 @@ export function ManagerHub() {
           <div className="text-sm font-bold text-neutral-700">أهداف المبيعات والفروع</div>
           <div className="mt-1 text-xs text-neutral-400">تحديد ومتابعة أهداف كل فرع وبائع</div>
         </Link>
-        <div className="rounded-xl border border-status-warn bg-status-warn-bg/40 p-5">
+        <Link to="/audit" className="rounded-xl border border-status-warn bg-status-warn-bg/40 p-5 transition hover:border-status-warn">
           <div className="text-sm font-bold text-neutral-800">سجل التدقيق</div>
           <div className="mt-1 text-xs text-neutral-600">
             للاطلاع فقط — لا يملك أي مستخدم، بما فيهم المدير، صلاحية تعديل سجل التدقيق نفسه
           </div>
-        </div>
+        </Link>
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import { Logo } from "./Logo";
 import { COMPANY_NAME, ROLE_HUB_LABEL } from "../data/mockData";
 import { NAV_ITEMS } from "../data/navConfig";
 import { ROLE_LABELS } from "../types";
+import { NotificationBell } from "./NotificationBell";
+import { GlobalSearch } from "./GlobalSearch";
 
 export function Layout() {
   const { currentEmployee, logout } = useAuth();
@@ -99,10 +101,12 @@ export function Layout() {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">
+            <GlobalSearch />
+            <NotificationBell />
+            <span className="hidden rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 sm:inline">
               {ROLE_LABELS[currentEmployee.role]}
             </span>
-            <span className="hidden rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-600 sm:inline">
+            <span className="hidden rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-600 lg:inline">
               {currentEmployee.branch}
             </span>
           </div>

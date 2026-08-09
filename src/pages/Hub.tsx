@@ -10,6 +10,7 @@ import { ProcurementHub } from "./hubs/ProcurementHub";
 import { AuditHub } from "./hubs/AuditHub";
 import { CustomerCommsHub } from "./hubs/CustomerCommsHub";
 import { ShortagesHub } from "./hubs/ShortagesHub";
+import { HRHub } from "./hubs/HRHub";
 
 export function Hub() {
   const { currentEmployee } = useAuth();
@@ -38,6 +39,8 @@ export function Hub() {
       return <CustomerCommsHub />;
     case "shortages":
       return <ShortagesHub />;
+    case "hr":
+      return <HRHub />;
     default:
       return (
         <div className="rounded-xl border border-brand-100 bg-white p-6 text-sm text-neutral-500">

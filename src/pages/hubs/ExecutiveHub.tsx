@@ -85,7 +85,7 @@ export function ExecutiveHub() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Link to="/hub" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
+        <Link to="/audit" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
           <div className="text-sm font-bold text-neutral-700">التدقيق والامتثال</div>
           <div className="mt-1 text-xs text-neutral-400">سجل كل عملية حساسة بالشركة — من قام بها ومتى</div>
         </Link>

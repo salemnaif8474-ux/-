@@ -1,6 +1,7 @@
 import { PURCHASE_ORDERS, SUPPLIERS } from "../../data/mockData";
 import { HubSection } from "../../components/HubSection";
 import { Pill } from "../../components/Pill";
+import { exportToCsv } from "../../lib/exportCsv";
 import type { PurchaseOrderStatus } from "../../types";
 
 const STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
@@ -48,7 +49,30 @@ export function ProcurementHub() {
         </div>
       </div>
 
-      <HubSection title="أوامر الشراء" description="طلب الشراء ← أمر الشراء ← الاستلام ← المطابقة">
+      <HubSection
+        title="أوامر الشراء"
+        description="طلب الشراء ← أمر الشراء ← الاستلام ← المطابقة"
+        action={
+          <button
+            onClick={() =>
+              exportToCsv(
+                "أوامر-الشراء",
+                PURCHASE_ORDERS.map((po) => ({
+                  الرقم: po.number,
+                  المورد: SUPPLIERS.find((s) => s.id === po.supplierId)?.name ?? "",
+                  الفرع: po.branch,
+                  القيمة: po.items.reduce((s, i) => s + i.qty * i.unitCost, 0),
+                  الحالة: STATUS_LABEL[po.status],
+                  "مطابقة الفاتورة": po.invoiceMatched ? "مطابقة" : "غير مطابقة",
+                })),
+              )
+            }
+            className="rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
+          >
+            تصدير CSV
+          </button>
+        }
+      >
         <div className="table-scroll overflow-x-auto">
           <table className="w-full min-w-[620px] text-right text-sm">
             <thead className="bg-brand-50 text-xs text-brand-700">

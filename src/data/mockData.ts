@@ -6,6 +6,8 @@ import type {
   Customer,
   Employee,
   ITTicket,
+  LeaveRequest,
+  NitaqatStatus,
   Part,
   PurchaseOrder,
   ReturnRequest,
@@ -64,6 +66,7 @@ export const EMPLOYEES: Employee[] = [
       { month: "2026-08", rating: "bad", note: "لا يزال يكرر نفس الأخطاء" },
     ],
     boundDevice: "Samsung A54 — جوال العمل المسجّل",
+    iqamaExpiry: "2026-09-02",
   },
   {
     id: "e3",
@@ -183,6 +186,7 @@ export const EMPLOYEES: Employee[] = [
     rating: "warn",
     ratingNote: "أحيانًا يتأخر بمتابعة طلبات الموردين",
     mistakesLog: [{ date: "2026-05-01", note: "تأخر بطلب توريد فلاتر" }],
+    iqamaExpiry: "2026-08-20",
   },
   {
     id: "e9",
@@ -383,7 +387,7 @@ export const DEFAULT_PERMISSIONS_BY_ROLE: Record<Role, string[]> = {
   shortages: ["dashboard", "targets", "chats", "hub"],
   it: ["dashboard", "targets", "chats", "employees", "hub"],
   accountant: ["dashboard", "targets", "chats", "hub"],
-  hr: ["dashboard", "targets", "chats", "employees"],
+  hr: ["dashboard", "targets", "chats", "employees", "hub"],
   customer_relations: ["dashboard", "targets", "chats", "hub"],
 };
 
@@ -694,6 +698,18 @@ export const APPROVAL_REQUESTS: ApprovalRequest[] = [
   },
 ];
 
+export const LEAVE_REQUESTS: LeaveRequest[] = [
+  { id: "lv1", employeeId: "e2", type: "annual", fromDate: "2026-08-14", toDate: "2026-08-16", status: "pending" },
+  { id: "lv2", employeeId: "e11", type: "sick", fromDate: "2026-08-05", toDate: "2026-08-06", status: "approved" },
+  { id: "lv3", employeeId: "e8", type: "emergency", fromDate: "2026-08-11", toDate: "2026-08-11", status: "pending" },
+];
+
+export const NITAQAT_STATUS: NitaqatStatus = {
+  band: "high_green",
+  saudizationPct: 42,
+  requiredPct: 35,
+};
+
 export const ROLE_HUB_LABEL: Partial<Record<Role, string>> = {
   owner: "اللوحة التنفيذية",
   manager: "الموافقات والصلاحيات",
@@ -705,5 +721,6 @@ export const ROLE_HUB_LABEL: Partial<Record<Role, string>> = {
   shortages: "النواقص وإعادة الطلب",
   it: "مركز تقنية المعلومات",
   accountant: "المحاسبة",
+  hr: "الموارد البشرية",
   customer_relations: "تواصل العملاء",
 };
