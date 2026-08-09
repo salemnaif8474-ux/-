@@ -2,10 +2,10 @@ import { EMPLOYEES } from "../data/mockData";
 import { RatingBadge } from "../components/RatingBadge";
 import { ROLE_LABELS, type RatingColor } from "../types";
 
-const GROUPS: { key: RatingColor; title: string; hint: string }[] = [
-  { key: "bad", title: "🔴 يحتاجون متابعة عاجلة", hint: "أخطاء متكررة وبدون تحسن ملحوظ" },
-  { key: "warn", title: "🟠 أداء متذبذب", hint: "أحيانًا يخطئون وأحيانًا يصيبون" },
-  { key: "good", title: "🟢 موظفون ممتازون", hint: "يلتزمون بالتعليمات ويتعلمون من أخطائهم" },
+const GROUPS: { key: RatingColor; title: string; hint: string; dot: string }[] = [
+  { key: "bad", title: "يحتاجون متابعة عاجلة", hint: "أخطاء متكررة وبدون تحسن ملحوظ", dot: "bg-status-bad" },
+  { key: "warn", title: "أداء متذبذب", hint: "أحيانًا يخطئون وأحيانًا يصيبون", dot: "bg-status-warn" },
+  { key: "good", title: "موظفون ممتازون", hint: "يلتزمون بالتعليمات ويتعلمون من أخطائهم", dot: "bg-status-good" },
 ];
 
 export function EmployeeRatings() {
@@ -20,7 +20,11 @@ export function EmployeeRatings() {
         const list = EMPLOYEES.filter((e) => e.rating === group.key && e.role !== "owner");
         return (
           <div key={group.key} className="rounded-xl border border-brand-100 bg-white p-5">
-            <div className="mb-1 text-sm font-bold text-neutral-700">{group.title}</div>
+            <div className="mb-1 flex items-center gap-2 text-sm font-bold text-neutral-700">
+              <span className={`h-2.5 w-2.5 rounded-full ${group.dot}`} />
+              {group.title}
+              <span className="text-xs font-normal text-neutral-400">({list.length})</span>
+            </div>
             <div className="mb-4 text-xs text-neutral-400">{group.hint}</div>
             {list.length === 0 ? (
               <div className="text-xs text-neutral-400">لا يوجد موظفون بهذا التصنيف حاليًا</div>

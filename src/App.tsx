@@ -8,6 +8,7 @@ import { Chats } from "./pages/Chats";
 import { CustomerAssignments } from "./pages/CustomerAssignments";
 import { EmployeeManagement } from "./pages/EmployeeManagement";
 import { Targets } from "./pages/Targets";
+import { Profile } from "./pages/Profile";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/customers" element={<CustomerAssignments />} />
           <Route path="/ratings" element={<EmployeeRatings />} />
           <Route path="/employees" element={<EmployeeManagement />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
     </AuthProvider>

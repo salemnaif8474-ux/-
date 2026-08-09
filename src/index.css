@@ -1,31 +1,72 @@
 @import "tailwindcss";
+@import "./fonts.css";
 
+/*
+  Single committed theme: warm off-white ground with a deep maroon brand
+  accent (explicit user requirement — "أحمر وأبيض"). Status colors are
+  deliberately shifted away from the brand hue so a rating badge is never
+  mistaken for the brand mark. All colors are painted explicitly (no
+  reliance on inherited/transparent surfaces) so the page holds on any
+  host background.
+*/
 @theme {
-  --font-sans: "Tajawal", "Segoe UI", sans-serif;
+  --font-sans: "Cairo", "Segoe UI", "Tahoma", sans-serif;
 
-  /* Brand identity (deep maroon red) - used for header, nav, primary buttons */
-  --color-brand-50: #fdf2f2;
-  --color-brand-100: #fbdcdd;
-  --color-brand-600: #9e1b24;
-  --color-brand-700: #7c151c;
-  --color-brand-800: #5c0f14;
+  /* Brand identity - deep maroon */
+  --color-brand-50: #fbf1f0;
+  --color-brand-100: #f5dedc;
+  --color-brand-600: #8f1d24;
+  --color-brand-700: #6e161c;
+  --color-brand-800: #4c0f13;
 
-  /* Semantic status colors (kept visually distinct from brand red) */
-  --color-status-bad: #e53935;
-  --color-status-bad-bg: #fdecea;
-  --color-status-warn: #fb8c00;
-  --color-status-warn-bg: #fff4e5;
-  --color-status-good: #43a047;
-  --color-status-good-bg: #e8f5e9;
-  --color-status-pending: #f4b400;
+  /* Warm-tinted neutrals (biased toward the brand hue, not flat grey) */
+  --color-neutral-50: #faf6f5;
+  --color-neutral-100: #f1e9e8;
+  --color-neutral-200: #e4d7d5;
+  --color-neutral-400: #a99593;
+  --color-neutral-500: #8a7877;
+  --color-neutral-600: #6b5b5a;
+  --color-neutral-700: #4a3f3f;
+  --color-neutral-800: #322a2a;
+  --color-neutral-900: #1f1919;
+
+  /* Semantic status colors - separate hue family from the brand accent */
+  --color-status-bad: #d6393a;
+  --color-status-bad-bg: #fbeaea;
+  --color-status-warn: #b26a00;
+  --color-status-warn-bg: #fbeedd;
+  --color-status-good: #2e7d32;
+  --color-status-good-bg: #e7f3e8;
+  --color-status-pending: #b26a00;
 }
 
-html {
+:root {
   direction: rtl;
+  color-scheme: light;
 }
 
 body {
-  background-color: #ffffff;
-  color: #1f1315;
+  background-color: var(--color-neutral-50);
+  color: var(--color-neutral-900);
   font-family: var(--font-sans);
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

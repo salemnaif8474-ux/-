@@ -291,6 +291,39 @@ export const MONTHLY_TARGET = {
   ],
 };
 
+export const SELLER_PERFORMANCE: { employeeId: string; targetSar: number; achievedSar: number }[] = [
+  { employeeId: "e1", targetSar: 250_000, achievedSar: 231_000 },
+  { employeeId: "e4", targetSar: 200_000, achievedSar: 96_000 },
+];
+
+export interface PermissionModule {
+  key: string;
+  label: string;
+}
+
+export const PERMISSION_MODULES: PermissionModule[] = [
+  { key: "dashboard", label: "الرئيسية" },
+  { key: "targets", label: "الأهداف الشهرية" },
+  { key: "chats", label: "المحادثات" },
+  { key: "customers", label: "عملائي" },
+  { key: "ratings", label: "تقييم الموظفين" },
+  { key: "employees", label: "الموظفون والصلاحيات" },
+];
+
+export const DEFAULT_PERMISSIONS_BY_ROLE: Record<Role, string[]> = {
+  owner: ["dashboard", "targets", "chats", "customers", "ratings", "employees"],
+  review: ["dashboard", "targets", "chats"],
+  seller: ["dashboard", "targets", "chats", "customers"],
+  preparer: ["dashboard", "targets", "chats"],
+  branch_manager: ["dashboard", "targets", "chats", "customers"],
+  purchasing: ["dashboard", "targets", "chats"],
+  shortages: ["dashboard", "targets", "chats"],
+  it: ["dashboard", "targets", "chats", "employees"],
+  accountant: ["dashboard", "targets", "chats"],
+  hr: ["dashboard", "targets", "chats", "employees"],
+  customer_relations: ["dashboard", "targets", "chats"],
+};
+
 export const ROLE_HOME_HINT: Record<Role, string> = {
   owner: "نظرة شاملة على كل الفروع والمبيعات والموظفين",
   review: "متابعة الجرد والفروقات وتقارير المراجعة",

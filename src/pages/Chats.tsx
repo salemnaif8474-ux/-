@@ -19,6 +19,17 @@ export function Chats() {
 
   const activeDef = CHAT_DEFS.find((c) => c.key === active);
   const messages = messagesByChat[active] ?? [];
+  const canDecide =
+    currentEmployee &&
+    activeDef?.requiresApproval &&
+    ["owner", "accountant"].includes(currentEmployee.role);
+
+  function decide(messageId: string, next: "approved" | "mismatch" | "resolved") {
+    setMessagesByChat((prev) => ({
+      ...prev,
+      [active]: (prev[active] ?? []).map((m) => (m.id === messageId ? { ...m, status: next } : m)),
+    }));
+  }
 
   function sendMessage() {
     if (!draft.trim() || !currentEmployee) return;
@@ -78,7 +89,7 @@ export function Chats() {
                     <div className="text-[11px] text-neutral-400">{m.time}</div>
                   </div>
                   <div className="mt-1 text-sm text-neutral-600">{m.text}</div>
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
                     {m.hasAttachment && (
                       <span className="rounded bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500">📎 مرفق</span>
                     )}
@@ -86,6 +97,22 @@ export function Chats() {
                       <span className={`rounded px-2 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[m.status].className}`}>
                         {STATUS_STYLES[m.status].label}
                       </span>
+                    )}
+                    {canDecide && m.status === "pending" && (
+                      <div className="mr-auto flex gap-1.5">
+                        <button
+                          onClick={() => decide(m.id, "approved")}
+                          className="rounded bg-status-good-bg px-2.5 py-1 text-[11px] font-semibold text-status-good hover:opacity-80"
+                        >
+                          موافقة
+                        </button>
+                        <button
+                          onClick={() => decide(m.id, "mismatch")}
+                          className="rounded bg-status-bad-bg px-2.5 py-1 text-[11px] font-semibold text-status-bad hover:opacity-80"
+                        >
+                          رفض
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>

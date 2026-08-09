@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { EMPLOYEES } from "../data/mockData";
+import { useMemo, useState } from "react";
+import { DEFAULT_PERMISSIONS_BY_ROLE, EMPLOYEES, PERMISSION_MODULES } from "../data/mockData";
 import { ROLE_LABELS, type Employee } from "../types";
 import { RatingBadge } from "../components/RatingBadge";
 
@@ -11,16 +11,44 @@ const STATUS_LABEL: Record<Employee["status"], { label: string; className: strin
 
 export function EmployeeManagement() {
   const [selected, setSelected] = useState<Employee | null>(null);
+  const [query, setQuery] = useState("");
+  const [permissionsByEmployee, setPermissionsByEmployee] = useState<Record<string, Set<string>>>(() =>
+    Object.fromEntries(EMPLOYEES.map((e) => [e.id, new Set(DEFAULT_PERMISSIONS_BY_ROLE[e.role])])),
+  );
+
+  const filtered = useMemo(() => {
+    const q = query.trim();
+    if (!q) return EMPLOYEES;
+    return EMPLOYEES.filter(
+      (e) => e.fullName.includes(q) || e.username.includes(q) || ROLE_LABELS[e.role].includes(q) || e.branch.includes(q),
+    );
+  }, [query]);
+
+  function togglePermission(employeeId: string, moduleKey: string) {
+    setPermissionsByEmployee((prev) => {
+      const next = new Set(prev[employeeId]);
+      if (next.has(moduleKey)) next.delete(moduleKey);
+      else next.add(moduleKey);
+      return { ...prev, [employeeId]: next };
+    });
+  }
 
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-xl font-bold text-neutral-800">إدارة الموظفين والصلاحيات</h1>
-        <p className="text-sm text-neutral-500">بيانات كل موظف، دوره الوظيفي، وحالة حسابه</p>
+        <p className="text-sm text-neutral-500">بيانات كل موظف، دوره الوظيفي، وحالة حسابه — والصلاحيات التي يحددها المدير</p>
       </div>
 
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="ابحث بالاسم أو اليوزر أو الدور أو الفرع..."
+        className="w-full max-w-sm rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:border-brand-600 focus:outline-none"
+      />
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="overflow-hidden rounded-xl border border-brand-100 bg-white lg:col-span-2">
+        <div className="overflow-x-auto rounded-xl border border-brand-100 bg-white lg:col-span-2">
           <table className="w-full text-right text-sm">
             <thead className="bg-brand-50 text-xs text-brand-700">
               <tr>
@@ -32,11 +60,13 @@ export function EmployeeManagement() {
               </tr>
             </thead>
             <tbody>
-              {EMPLOYEES.map((emp) => (
+              {filtered.map((emp) => (
                 <tr
                   key={emp.id}
                   onClick={() => setSelected(emp)}
-                  className="cursor-pointer border-t border-neutral-100 hover:bg-brand-50/40"
+                  className={`cursor-pointer border-t border-neutral-100 hover:bg-brand-50/40 ${
+                    selected?.id === emp.id ? "bg-brand-50/60" : ""
+                  }`}
                 >
                   <td className="px-4 py-3 font-medium text-neutral-800">{emp.fullName}</td>
                   <td className="px-4 py-3 text-neutral-500">{ROLE_LABELS[emp.role]}</td>
@@ -51,6 +81,13 @@ export function EmployeeManagement() {
                   </td>
                 </tr>
               ))}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-6 text-center text-xs text-neutral-400">
+                    لا توجد نتائج مطابقة
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -74,12 +111,24 @@ export function EmployeeManagement() {
               </dl>
               <div className="border-t border-neutral-100 pt-3">
                 <div className="mb-2 text-xs font-semibold text-neutral-500">الصلاحيات (يحددها المدير)</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {["الرئيسية", "الأهداف الشهرية", "المحادثات المتخصصة بدوره"].map((p) => (
-                    <span key={p} className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] text-neutral-600">
-                      {p}
-                    </span>
-                  ))}
+                <div className="space-y-1.5">
+                  {PERMISSION_MODULES.map((m) => {
+                    const checked = permissionsByEmployee[selected.id]?.has(m.key) ?? false;
+                    return (
+                      <label
+                        key={m.key}
+                        className="flex cursor-pointer items-center justify-between rounded-lg border border-neutral-100 px-3 py-2 text-sm hover:bg-neutral-50"
+                      >
+                        <span className="text-neutral-700">{m.label}</span>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => togglePermission(selected.id, m.key)}
+                          className="h-4 w-4 accent-brand-600"
+                        />
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -92,7 +141,7 @@ export function EmployeeManagement() {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between border-b border-neutral-50 pb-1.5">
+    <div className="flex justify-between border-b border-neutral-50 pb-1.5 tabular-nums">
       <dt className="text-neutral-400">{label}</dt>
       <dd className="font-medium text-neutral-700">{value}</dd>
     </div>
