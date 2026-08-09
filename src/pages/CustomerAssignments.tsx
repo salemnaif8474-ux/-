@@ -5,7 +5,7 @@ export function CustomerAssignments() {
   const { currentEmployee } = useAuth();
   if (!currentEmployee) return null;
 
-  const isOwner = currentEmployee.role === "owner" || currentEmployee.role === "branch_manager";
+  const isOwner = ["owner", "manager", "branch_manager"].includes(currentEmployee.role);
   const visibleCustomers = isOwner
     ? CUSTOMERS
     : CUSTOMERS.filter((c) => c.ownerSellerId === currentEmployee.id || c.ownerSellerId === null);

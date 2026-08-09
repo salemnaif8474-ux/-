@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Logo } from "./Logo";
-import { COMPANY_NAME } from "../data/mockData";
+import { COMPANY_NAME, ROLE_HUB_LABEL } from "../data/mockData";
 import { ROLE_LABELS, type Role } from "../types";
 
 interface NavItem {
@@ -15,9 +15,9 @@ const NAV_ITEMS: NavItem[] = [
   { to: "/", label: "الرئيسية", roles: "all" },
   { to: "/targets", label: "الأهداف الشهرية", roles: "all" },
   { to: "/chats", label: "المحادثات", roles: "all" },
-  { to: "/customers", label: "عملائي", roles: ["seller", "owner", "branch_manager"] },
+  { to: "/customers", label: "عملائي", roles: ["seller", "owner", "manager", "branch_manager"] },
   { to: "/ratings", label: "تقييم الموظفين", roles: ["owner"] },
-  { to: "/employees", label: "الموظفون والصلاحيات", roles: ["owner", "it", "hr"] },
+  { to: "/employees", label: "الموظفون والصلاحيات", roles: ["owner", "manager", "it", "hr"] },
   { to: "/profile", label: "حسابي", roles: "all" },
 ];
 
@@ -28,9 +28,13 @@ export function Layout() {
 
   if (!currentEmployee) return <Navigate to="/login" replace />;
 
+  const hubLabel = ROLE_HUB_LABEL[currentEmployee.role];
   const visibleNav = NAV_ITEMS.filter(
     (item) => item.roles === "all" || item.roles.includes(currentEmployee.role),
   );
+  if (hubLabel) {
+    visibleNav.splice(1, 0, { to: "/hub", label: hubLabel, roles: "all" });
+  }
 
   const sidebar = (
     <>

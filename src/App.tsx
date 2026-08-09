@@ -9,6 +9,7 @@ import { CustomerAssignments } from "./pages/CustomerAssignments";
 import { EmployeeManagement } from "./pages/EmployeeManagement";
 import { Targets } from "./pages/Targets";
 import { Profile } from "./pages/Profile";
+import { Hub } from "./pages/Hub";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/ratings" element={<EmployeeRatings />} />
           <Route path="/employees" element={<EmployeeManagement />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/hub" element={<Hub />} />
         </Route>
       </Routes>
     </AuthProvider>

@@ -1,5 +1,6 @@
 export type Role =
   | "owner"
+  | "manager"
   | "review"
   | "seller"
   | "preparer"
@@ -13,9 +14,10 @@ export type Role =
 
 export const ROLE_LABELS: Record<Role, string> = {
   owner: "صاحب الشركة",
+  manager: "المدير العام",
   review: "المراجعة والتدقيق",
-  seller: "بائع",
-  preparer: "محضّر",
+  seller: "بائع قطع غيار",
+  preparer: "مسؤول الاستلام",
   branch_manager: "مسؤول فرع",
   purchasing: "المشتريات",
   shortages: "النواقص",
@@ -76,4 +78,107 @@ export interface Customer {
   name: string;
   phone: string;
   ownerSellerId: string | null;
+}
+
+export interface BranchStock {
+  branch: string;
+  available: number;
+  reserved: number;
+  incoming: number;
+}
+
+export interface Part {
+  id: string;
+  partNumber: string;
+  name: string;
+  vehicleCompat: string;
+  isOriginal: boolean;
+  price: number;
+  costPrice: number;
+  reorderPoint: number;
+  safetyStock: number;
+  stockByBranch: BranchStock[];
+}
+
+export type SalesDocStatus = "draft" | "sent" | "approved" | "converted" | "processing" | "completed";
+
+export interface SalesDoc {
+  id: string;
+  number: string;
+  type: "quotation" | "order";
+  customerId: string;
+  sellerId: string;
+  items: { partNumber: string; name: string; qty: number; unitPrice: number }[];
+  discountPct: number;
+  status: SalesDocStatus;
+  date: string;
+}
+
+export interface ReturnRequest {
+  id: string;
+  customerId: string;
+  partNumber: string;
+  type: "return" | "warranty";
+  reason: string;
+  status: "pending" | "approved" | "rejected";
+  date: string;
+}
+
+export interface Supplier {
+  id: string;
+  name: string;
+  category: string;
+  leadTimeDays: number;
+  rating: RatingColor;
+  contact: string;
+}
+
+export type PurchaseOrderStatus = "requested" | "approved" | "ordered" | "partially_received" | "received" | "matched";
+
+export interface PurchaseOrder {
+  id: string;
+  number: string;
+  supplierId: string;
+  items: { partNumber: string; name: string; qty: number; unitCost: number }[];
+  status: PurchaseOrderStatus;
+  requestedBy: string;
+  branch: string;
+  date: string;
+  invoiceMatched: boolean;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  category: string;
+  who: string;
+  action: string;
+  when: string;
+  before: string;
+  after: string;
+  approvedBy: string;
+  result: "flagged" | "cleared" | "pending";
+}
+
+export type ITTicketCategory = "incident" | "problem" | "change" | "access";
+
+export interface ITTicket {
+  id: string;
+  subject: string;
+  requester: string;
+  category: ITTicketCategory;
+  priority: "low" | "medium" | "high";
+  status: "open" | "in_progress" | "resolved";
+  createdAt: string;
+  slaHours: number;
+}
+
+export interface ApprovalRequest {
+  id: string;
+  kind: "purchase" | "discount" | "return" | "stock_adjustment" | "transfer" | "write_off";
+  summary: string;
+  requestedBy: string;
+  branch: string;
+  amount: number;
+  status: "pending" | "approved" | "rejected";
+  date: string;
 }

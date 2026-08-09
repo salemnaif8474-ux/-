@@ -20,6 +20,7 @@ export function Dashboard() {
     count: CHAT_MESSAGES[src.key].filter((m) => m.status === "pending").length,
   })).filter((a) => a.count > 0);
   const badEmployeesCount = EMPLOYEES.filter((e) => e.rating === "bad").length;
+  const isExecutive = ["owner", "manager"].includes(currentEmployee.role);
 
   return (
     <div className="space-y-6">
@@ -65,7 +66,7 @@ export function Dashboard() {
         )}
       </div>
 
-      {currentEmployee.role === "owner" && actionItems.length > 0 && (
+      {isExecutive && actionItems.length > 0 && (
         <div className="rounded-xl border border-status-warn bg-status-warn-bg/40 p-5">
           <div className="mb-3 text-sm font-bold text-neutral-800">يحتاج قرارك الآن</div>
           <div className="space-y-2">
@@ -85,7 +86,7 @@ export function Dashboard() {
         </div>
       )}
 
-      {currentEmployee.role === "owner" && (
+      {isExecutive && (
         <div className="rounded-xl border border-brand-100 bg-white p-5">
           <div className="mb-3 text-sm font-bold text-neutral-700">أداء الفروع مقابل الهدف</div>
           <div className="space-y-3">

@@ -22,7 +22,7 @@ export function Chats() {
   const canDecide =
     currentEmployee &&
     activeDef?.requiresApproval &&
-    ["owner", "accountant"].includes(currentEmployee.role);
+    ["owner", "manager", "accountant"].includes(currentEmployee.role);
 
   function decide(messageId: string, next: "approved" | "mismatch" | "resolved") {
     setMessagesByChat((prev) => ({
