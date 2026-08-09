@@ -1,5 +1,5 @@
 import { useAuth } from "../context/AuthContext";
-import { CHAT_MESSAGES, EMPLOYEES, MONTHLY_TARGET, ROLE_HOME_HINT } from "../data/mockData";
+import { CHAT_DEFS, CHAT_MESSAGES, EMPLOYEES, MONTHLY_TARGET, ROLE_HOME_HINT } from "../data/mockData";
 import { Link } from "react-router-dom";
 import { RatingBadge } from "../components/RatingBadge";
 import { ROLE_LABELS } from "../types";
@@ -21,6 +21,7 @@ export function Dashboard() {
     count: CHAT_MESSAGES[src.key].filter((m) => m.status === "pending").length,
   })).filter((a) => a.count > 0);
   const badEmployeesCount = EMPLOYEES.filter((e) => e.rating === "bad").length;
+  const visibleChatsCount = CHAT_DEFS.filter((c) => c.roles.includes(currentEmployee.role)).length;
   const isExecutive = ["owner", "manager"].includes(currentEmployee.role);
   const showTargets = currentEmployee.role !== "preparer";
 
@@ -61,7 +62,7 @@ export function Dashboard() {
 
         <Link to="/chats" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
           <div className="text-xs text-neutral-400">المحادثات</div>
-          <div className="mt-1 text-2xl font-bold text-brand-700">7</div>
+          <div className="mt-1 text-2xl font-bold text-brand-700 tabular-nums">{visibleChatsCount}</div>
           <div className="mt-2 text-xs text-neutral-400">قنوات متخصصة حسب صلاحياتك</div>
         </Link>
 

@@ -333,9 +333,13 @@ export const CHAT_MESSAGES: Record<string, ChatMessage[]> = {
   price_changes: [
     { id: "m1", author: "أحمد القحطاني", role: "seller", time: "08:40", text: "أطلب تخفيض سعر بطارية AC Delco من 480 إلى 450 لوجود عرض منافس", status: "pending" },
   ],
-  employee_manager: [
-    { id: "m1", author: "فيصل المطيري", role: "preparer", time: "16:00", text: "أستاذ، ممكن أجازة يوم الخميس؟" },
-  ],
+};
+
+// Each entry is a private 1:1 thread between that employee and management —
+// keyed by the employee's id so no one else's messages are visible in it.
+export const EMPLOYEE_MANAGER_THREADS: Record<string, ChatMessage[]> = {
+  e2: [{ id: "m1", author: "فيصل المطيري", role: "preparer", time: "16:00", text: "أستاذ، ممكن أجازة يوم الخميس؟" }],
+  e4: [{ id: "m1", author: "خالد الدوسري", role: "seller", time: "10:15", text: "ممكن أعرف سبب تأخر عمولة الشهر الماضي؟" }],
 };
 
 export const MONTHLY_TARGET = {

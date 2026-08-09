@@ -98,7 +98,7 @@ export function Login() {
                 }}
                 className="rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-xs text-brand-700 hover:bg-brand-100"
               >
-                {ROLE_LABELS[emp.role]}
+                {ROLE_LABELS[emp.role]} · {emp.fullName.split(" ")[0]}
               </button>
             ))}
           </div>

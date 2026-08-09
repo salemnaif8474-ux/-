@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { CHAT_DEFS, CHAT_MESSAGES } from "../data/mockData";
+import { CHAT_DEFS, CHAT_MESSAGES, EMPLOYEES, EMPLOYEE_MANAGER_THREADS } from "../data/mockData";
 import type { ChatKey, ChatMessage } from "../types";
 
 const STATUS_STYLES: Record<NonNullable<ChatMessage["status"]>, { label: string; className: string }> = {
@@ -10,17 +10,37 @@ const STATUS_STYLES: Record<NonNullable<ChatMessage["status"]>, { label: string;
   mismatch: { label: "فيه فرق", className: "bg-status-bad-bg text-status-bad" },
 };
 
+const THREAD_VIEWER_ROLES = ["owner", "manager"];
+
 export function Chats() {
   const { currentEmployee } = useAuth();
   const visibleChats = CHAT_DEFS.filter((c) => currentEmployee && c.roles.includes(currentEmployee.role));
   const [active, setActive] = useState<ChatKey>(visibleChats[0]?.key ?? "sales");
   const [draft, setDraft] = useState("");
   const [messagesByChat, setMessagesByChat] = useState(CHAT_MESSAGES);
+  const [threadsByEmployee, setThreadsByEmployee] = useState(EMPLOYEE_MANAGER_THREADS);
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(
+    Object.keys(EMPLOYEE_MANAGER_THREADS)[0] ?? null,
+  );
+
+  if (!currentEmployee) return null;
 
   const activeDef = CHAT_DEFS.find((c) => c.key === active);
-  const messages = messagesByChat[active] ?? [];
+  const isEmployeeManagerChat = active === "employee_manager";
+  const isThreadViewer = THREAD_VIEWER_ROLES.includes(currentEmployee.role);
+
+  const effectiveThreadId = isEmployeeManagerChat
+    ? isThreadViewer
+      ? selectedThreadId
+      : currentEmployee.id
+    : null;
+
+  const messages = isEmployeeManagerChat
+    ? (effectiveThreadId ? (threadsByEmployee[effectiveThreadId] ?? []) : [])
+    : (messagesByChat[active] ?? []);
+
   const canDecide =
-    currentEmployee &&
+    !isEmployeeManagerChat &&
     activeDef?.requiresApproval &&
     ["owner", "manager", "accountant"].includes(currentEmployee.role);
 
@@ -41,9 +61,17 @@ export function Chats() {
       text: draft.trim(),
       status: activeDef?.requiresApproval ? "pending" : undefined,
     };
-    setMessagesByChat((prev) => ({ ...prev, [active]: [...(prev[active] ?? []), newMsg] }));
+
+    if (isEmployeeManagerChat && effectiveThreadId) {
+      setThreadsByEmployee((prev) => ({ ...prev, [effectiveThreadId]: [...(prev[effectiveThreadId] ?? []), newMsg] }));
+      if (isThreadViewer && !selectedThreadId) setSelectedThreadId(effectiveThreadId);
+    } else {
+      setMessagesByChat((prev) => ({ ...prev, [active]: [...(prev[active] ?? []), newMsg] }));
+    }
     setDraft("");
   }
+
+  const threadEmployees = EMPLOYEES.filter((e) => !THREAD_VIEWER_ROLES.includes(e.role));
 
   return (
     <div className="flex h-[calc(100vh-140px)] gap-4">
@@ -61,11 +89,35 @@ export function Chats() {
         ))}
       </aside>
 
+      {isEmployeeManagerChat && isThreadViewer && (
+        <aside className="w-56 shrink-0 space-y-1.5 overflow-y-auto rounded-xl border border-brand-100 bg-white p-3">
+          <div className="mb-1 px-1 text-[11px] font-semibold text-neutral-400">محادثات الموظفين</div>
+          {threadEmployees.map((emp) => (
+            <button
+              key={emp.id}
+              onClick={() => setSelectedThreadId(emp.id)}
+              className={`block w-full rounded-lg px-3 py-2 text-right text-xs transition ${
+                selectedThreadId === emp.id ? "bg-brand-50 text-brand-700 font-semibold" : "text-neutral-600 hover:bg-neutral-50"
+              }`}
+            >
+              {emp.fullName}
+            </button>
+          ))}
+        </aside>
+      )}
+
       <section className="flex flex-1 flex-col rounded-xl border border-brand-100 bg-white">
         {activeDef && (
           <>
             <div className="border-b border-neutral-100 px-5 py-4">
-              <div className="font-bold text-neutral-800">{activeDef.label}</div>
+              <div className="font-bold text-neutral-800">
+                {activeDef.label}
+                {isEmployeeManagerChat && isThreadViewer && selectedThreadId && (
+                  <span className="text-sm font-normal text-neutral-400">
+                    {" "}— {EMPLOYEES.find((e) => e.id === selectedThreadId)?.fullName}
+                  </span>
+                )}
+              </div>
               <div className="text-xs text-neutral-400">{activeDef.description}</div>
               <div className="mt-2 flex gap-2">
                 {activeDef.requiresApproval && (
@@ -78,67 +130,83 @@ export function Chats() {
                     يتطلب إرفاق صورة/إثبات
                   </span>
                 )}
+                {isEmployeeManagerChat && (
+                  <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-semibold text-neutral-500">
+                    محادثة خاصة — لا يطّلع عليها أحد غيركما
+                  </span>
+                )}
               </div>
             </div>
 
-            <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
-              {messages.map((m) => (
-                <div key={m.id} className="rounded-lg border border-neutral-100 p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-neutral-800">{m.author}</div>
-                    <div className="text-[11px] text-neutral-400">{m.time}</div>
-                  </div>
-                  <div className="mt-1 text-sm text-neutral-600">{m.text}</div>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    {m.hasAttachment && (
-                      <span className="rounded bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500">📎 مرفق</span>
-                    )}
-                    {m.status && (
-                      <span className={`rounded px-2 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[m.status].className}`}>
-                        {STATUS_STYLES[m.status].label}
-                      </span>
-                    )}
-                    {canDecide && m.status === "pending" && (
-                      <div className="mr-auto flex gap-1.5">
-                        <button
-                          onClick={() => decide(m.id, "approved")}
-                          className="rounded bg-status-good-bg px-2.5 py-1 text-[11px] font-semibold text-status-good hover:opacity-80"
-                        >
-                          موافقة
-                        </button>
-                        <button
-                          onClick={() => decide(m.id, "mismatch")}
-                          className="rounded bg-status-bad-bg px-2.5 py-1 text-[11px] font-semibold text-status-bad hover:opacity-80"
-                        >
-                          رفض
-                        </button>
+            {isEmployeeManagerChat && isThreadViewer && !selectedThreadId ? (
+              <div className="flex flex-1 items-center justify-center text-sm text-neutral-400">
+                اختر موظفًا من القائمة لعرض محادثته
+              </div>
+            ) : (
+              <>
+                <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
+                  {messages.length === 0 && (
+                    <div className="text-center text-xs text-neutral-400">لا توجد رسائل بعد</div>
+                  )}
+                  {messages.map((m) => (
+                    <div key={m.id} className="rounded-lg border border-neutral-100 p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-semibold text-neutral-800">{m.author}</div>
+                        <div className="text-[11px] text-neutral-400">{m.time}</div>
                       </div>
-                    )}
-                  </div>
+                      <div className="mt-1 text-sm text-neutral-600">{m.text}</div>
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        {m.hasAttachment && (
+                          <span className="rounded bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500">📎 مرفق</span>
+                        )}
+                        {m.status && (
+                          <span className={`rounded px-2 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[m.status].className}`}>
+                            {STATUS_STYLES[m.status].label}
+                          </span>
+                        )}
+                        {canDecide && m.status === "pending" && (
+                          <div className="mr-auto flex gap-1.5">
+                            <button
+                              onClick={() => decide(m.id, "approved")}
+                              className="rounded bg-status-good-bg px-2.5 py-1 text-[11px] font-semibold text-status-good hover:opacity-80"
+                            >
+                              موافقة
+                            </button>
+                            <button
+                              onClick={() => decide(m.id, "mismatch")}
+                              className="rounded bg-status-bad-bg px-2.5 py-1 text-[11px] font-semibold text-status-bad hover:opacity-80"
+                            >
+                              رفض
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <div className="flex items-center gap-2 border-t border-neutral-100 p-4">
-              <input
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                placeholder="اكتب رسالتك..."
-                className="flex-1 rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:border-brand-600 focus:outline-none"
-              />
-              {activeDef.requiresAttachment && (
-                <button className="rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-50">
-                  📎 إرفاق
-                </button>
-              )}
-              <button
-                onClick={sendMessage}
-                className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700"
-              >
-                إرسال
-              </button>
-            </div>
+                <div className="flex items-center gap-2 border-t border-neutral-100 p-4">
+                  <input
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                    placeholder="اكتب رسالتك..."
+                    className="flex-1 rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:border-brand-600 focus:outline-none"
+                  />
+                  {activeDef.requiresAttachment && (
+                    <button className="rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-50">
+                      📎 إرفاق
+                    </button>
+                  )}
+                  <button
+                    onClick={sendMessage}
+                    className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700"
+                  >
+                    إرسال
+                  </button>
+                </div>
+              </>
+            )}
           </>
         )}
       </section>
