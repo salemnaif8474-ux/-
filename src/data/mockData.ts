@@ -17,7 +17,8 @@ import type {
   Supplier,
 } from "../types";
 
-export const COMPANY_NAME = "شركة قطع غيار السيارات";
+export const COMPANY_NAME = "شركة دعم المركبات للتجارة";
+export const COMPANY_NAME_EN = "Vehicle Support Trading Co.";
 
 export const EMPLOYEES: Employee[] = [
   {
