@@ -14,14 +14,14 @@ export function Layout() {
   const location = useLocation();
   const [navOpen, setNavOpen] = useState(false);
 
-  if (!currentEmployee) return <Navigate to="/login" replace />;
+  if (!currentEmployee) return <Navigate to="/app/login" replace />;
 
   const hubLabel = ROLE_HUB_LABEL[currentEmployee.role];
   const visibleNav = NAV_ITEMS.filter(
     (item) => item.roles === "all" || item.roles.includes(currentEmployee.role),
   );
   if (hubLabel) {
-    visibleNav.splice(1, 0, { to: "/hub", label: hubLabel, roles: "all" });
+    visibleNav.splice(1, 0, { to: "/app/hub", label: hubLabel, roles: "all" });
   }
 
   const sidebar = (
@@ -38,7 +38,7 @@ export function Layout() {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === "/"}
+            end={item.to === "/app"}
             onClick={() => setNavOpen(false)}
             className={({ isActive }) =>
               `block rounded-lg px-4 py-2.5 text-sm font-medium transition ${
@@ -63,7 +63,7 @@ export function Layout() {
     </>
   );
 
-  const currentLabel = visibleNav.find((n) => (n.to === "/" ? location.pathname === "/" : location.pathname.startsWith(n.to)))?.label;
+  const currentLabel = visibleNav.find((n) => (n.to === "/app" ? location.pathname === "/app" : location.pathname.startsWith(n.to)))?.label;
 
   return (
     <div className="flex min-h-screen bg-neutral-50 text-neutral-900">

@@ -66,7 +66,7 @@ export function ITHub() {
       </HubSection>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Link to="/employees" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
+        <Link to="/app/employees" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
           <div className="text-sm font-bold text-neutral-700">المستخدمون والصلاحيات</div>
           <div className="mt-1 text-xs text-neutral-400">إنشاء/تعطيل حسابات، أدوار، وطلبات وصول</div>
         </Link>
