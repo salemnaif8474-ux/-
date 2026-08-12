@@ -7,6 +7,7 @@ import { NAV_ITEMS } from "../data/navConfig";
 import { ROLE_LABELS } from "../types";
 import { NotificationBell } from "./NotificationBell";
 import { GlobalSearch } from "./GlobalSearch";
+import { InstallPrompt } from "./InstallPrompt";
 
 export function Layout() {
   const { currentEmployee, logout } = useAuth();
@@ -68,16 +69,16 @@ export function Layout() {
     <div className="flex min-h-screen bg-neutral-50 text-neutral-900">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-[60] focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white"
+        className="no-print sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-[60] focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white"
       >
         تجاوز إلى المحتوى الرئيسي
       </a>
       {/* Desktop sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col border-l border-brand-100 bg-white lg:flex">{sidebar}</aside>
+      <aside className="no-print hidden w-64 shrink-0 flex-col border-l border-brand-100 bg-white lg:flex">{sidebar}</aside>
 
       {/* Mobile sidebar overlay */}
       {navOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden">
+        <div className="no-print fixed inset-0 z-40 lg:hidden">
           <button
             aria-label="إغلاق القائمة"
             className="absolute inset-0 bg-neutral-900/40"
@@ -88,7 +89,7 @@ export function Layout() {
       )}
 
       <div className="flex min-h-screen flex-1 flex-col overflow-x-hidden">
-        <header className="flex items-center justify-between gap-3 border-b border-brand-100 bg-white px-4 py-4 sm:px-6">
+        <header className="no-print flex items-center justify-between gap-3 border-b border-brand-100 bg-white px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <button
               aria-label="فتح القائمة"
@@ -118,7 +119,10 @@ export function Layout() {
           </div>
         </header>
         <main id="main-content" tabIndex={-1} className="flex-1 p-4 sm:p-6 focus:outline-none">
-          <Outlet />
+          <InstallPrompt />
+          <div key={location.pathname} className="animate-page-fade">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

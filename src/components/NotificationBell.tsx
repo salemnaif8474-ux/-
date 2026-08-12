@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
 import { CHAT_MESSAGES, EMPLOYEES, IT_TICKETS, LEAVE_REQUESTS } from "../data/mockData";
+import { EmptyState } from "./EmptyState";
 
 interface NotificationItem {
   label: string;
@@ -88,7 +89,7 @@ export function NotificationBell() {
           <button aria-label="إغلاق" className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute left-0 z-50 mt-2 w-72 rounded-xl border border-brand-100 bg-white p-2 shadow-lg">
             {relevant.length === 0 ? (
-              <div className="p-3 text-center text-xs text-neutral-400">لا توجد إشعارات جديدة</div>
+              <EmptyState icon="check" title="لا توجد إشعارات جديدة" />
             ) : (
               relevant.map((i) => (
                 <Link

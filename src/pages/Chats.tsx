@@ -4,6 +4,7 @@ import { useData } from "../context/DataContext";
 import { CHAT_DEFS, CHAT_MESSAGES, EMPLOYEES, EMPLOYEE_MANAGER_THREADS } from "../data/mockData";
 import { getEffectiveThreadId, THREAD_VIEWER_ROLES } from "../lib/chatAccess";
 import { AttachmentIcon } from "../components/icons";
+import { EmptyState } from "../components/EmptyState";
 import type { ChatKey, ChatMessage } from "../types";
 
 const STATUS_STYLES: Record<NonNullable<ChatMessage["status"]>, { label: string; className: string }> = {
@@ -178,7 +179,7 @@ export function Chats() {
               <>
                 <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
                   {messages.length === 0 && (
-                    <div className="text-center text-xs text-neutral-400">لا توجد رسائل بعد</div>
+                    <EmptyState icon="chat" title="لا توجد رسائل بعد" hint="اكتب أول رسالة بالأسفل" />
                   )}
                   {messages.map((m) => (
                     <div key={m.id} className="rounded-lg border border-neutral-100 p-3">

@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useData } from "../../context/DataContext";
+import { useToast } from "../../context/ToastContext";
 import { HubSection } from "../../components/HubSection";
 import { Pill } from "../../components/Pill";
+import { EmptyState } from "../../components/EmptyState";
 import type { ApprovalRequest } from "../../types";
 
 const KIND_LABEL: Record<ApprovalRequest["kind"], string> = {
@@ -17,11 +19,13 @@ const KIND_LABEL: Record<ApprovalRequest["kind"], string> = {
 export function ManagerHub() {
   const { currentEmployee } = useAuth();
   const { approvals, decideApproval } = useData();
+  const { showToast } = useToast();
   const pending = approvals.filter((r) => r.status === "pending");
   const decided = approvals.filter((r) => r.status !== "pending");
 
   function decide(id: string, status: "approved" | "rejected") {
     decideApproval(id, status, currentEmployee?.fullName ?? "غير معروف");
+    showToast(status === "approved" ? "تم اعتماد العملية" : "تم رفض العملية", status === "approved" ? "good" : "bad");
   }
 
   return (
@@ -38,7 +42,7 @@ export function ManagerHub() {
         description="مشتريات، خصومات، مرتجعات، تسويات مخزون، تحويلات، وعمليات شطب"
       >
         {pending.length === 0 ? (
-          <div className="text-sm text-neutral-400">لا يوجد طلبات معلّقة حاليًا</div>
+          <EmptyState icon="check" title="لا يوجد طلبات معلّقة حاليًا" hint="كل العمليات الحساسة معتمدة أو مرفوضة" />
         ) : (
           <div className="space-y-2">
             {pending.map((r) => (

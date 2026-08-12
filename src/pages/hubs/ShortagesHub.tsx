@@ -1,6 +1,7 @@
 import { PARTS } from "../../data/mockData";
 import { HubSection } from "../../components/HubSection";
 import { Pill } from "../../components/Pill";
+import { EmptyState } from "../../components/EmptyState";
 import { computeShortages, computeTransferCandidates, suggestedReorderQty } from "../../lib/inventory";
 
 export function ShortagesHub() {
@@ -21,7 +22,7 @@ export function ShortagesHub() {
         description="الكمية المتاحة أقل من أو تساوي نقطة إعادة الطلب"
       >
         {shortages.length === 0 ? (
-          <div className="text-sm text-neutral-400">لا توجد نواقص حاليًا</div>
+          <EmptyState icon="check" title="لا توجد نواقص حاليًا" hint="كل القطع فوق نقطة إعادة الطلب" />
         ) : (
           <div className="table-scroll overflow-x-auto">
             <table className="w-full min-w-[560px] text-right text-sm">
@@ -56,7 +57,7 @@ export function ShortagesHub() {
 
       <HubSection title="فرص النقل بين الفروع" description="بدل الشراء من جديد، انقل من فرع فيه فائض">
         {transferCandidates.length === 0 ? (
-          <div className="text-sm text-neutral-400">لا توجد فرص نقل مناسبة حاليًا</div>
+          <EmptyState icon="inbox" title="لا توجد فرص نقل مناسبة حاليًا" />
         ) : (
           <div className="space-y-2">
             {transferCandidates.map(({ part, from, to }, i) => (

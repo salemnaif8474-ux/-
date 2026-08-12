@@ -95,6 +95,26 @@ h1, h2, h3 {
   animation: fade-slide-up 0.4s ease-out both;
 }
 
+@keyframes page-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-page-fade {
+  animation: page-fade-in 0.18s ease-out both;
+}
+
+@keyframes skeleton-sweep {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--color-neutral-100) 25%, var(--color-neutral-200) 50%, var(--color-neutral-100) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-sweep 1.4s ease-in-out infinite;
+}
+
 *:focus-visible {
   outline: 2px solid var(--color-brand-600);
   outline-offset: 2px;
@@ -104,5 +124,20 @@ h1, h2, h3 {
   * {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  a[href]::after {
+    content: none !important;
   }
 }

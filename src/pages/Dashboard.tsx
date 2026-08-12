@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
 import { CHAT_DEFS, CHAT_MESSAGES, EMPLOYEES, ROLE_HOME_HINT } from "../data/mockData";
@@ -14,7 +15,15 @@ const ACTION_SOURCES: { key: keyof typeof CHAT_MESSAGES; label: string; to: stri
 export function Dashboard() {
   const { currentEmployee } = useAuth();
   const { monthlyTarget } = useData();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 450);
+    return () => clearTimeout(t);
+  }, []);
+
   if (!currentEmployee) return null;
+  if (loading) return <DashboardSkeleton />;
 
   const pct = Math.round((monthlyTarget.achievedSar / monthlyTarget.targetSar) * 100);
 
@@ -128,6 +137,34 @@ export function Dashboard() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <div className="skeleton h-6 w-40 rounded-lg" />
+        <div className="skeleton h-4 w-64 rounded-lg" />
+      </div>
+      <div className="rounded-xl border border-brand-100 bg-white p-5">
+        <div className="skeleton mb-3 h-4 w-20 rounded" />
+        <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="skeleton h-4 rounded" />
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="space-y-3 rounded-xl border border-brand-100 bg-white p-5">
+            <div className="skeleton h-3 w-24 rounded" />
+            <div className="skeleton h-7 w-16 rounded" />
+            <div className="skeleton h-2 w-full rounded-full" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

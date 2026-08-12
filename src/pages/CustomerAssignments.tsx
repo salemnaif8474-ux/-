@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
+import { useToast } from "../context/ToastContext";
 import { EMPLOYEES } from "../data/mockData";
 import type { Customer } from "../types";
 
@@ -21,10 +22,10 @@ const EMPTY_FORM: Omit<Customer, "id"> = {
 export function CustomerAssignments() {
   const { currentEmployee } = useAuth();
   const { customers, updateCustomer, addCustomer } = useData();
+  const { showToast } = useToast();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState<Omit<Customer, "id">>(EMPTY_FORM);
-  const [savedFlash, setSavedFlash] = useState(false);
 
   if (!currentEmployee) return null;
 
@@ -49,14 +50,12 @@ export function CustomerAssignments() {
     setCreating(false);
     setSelectedId(c.id);
     setForm({ ...c });
-    setSavedFlash(false);
   }
 
   function openCreate() {
     setCreating(true);
     setSelectedId(null);
     setForm(EMPTY_FORM);
-    setSavedFlash(false);
   }
 
   function handleSave() {
@@ -64,11 +63,11 @@ export function CustomerAssignments() {
     if (creating) {
       addCustomer({ id: `c-${Date.now()}`, ...form }, currentEmployee.fullName);
       setCreating(false);
+      showToast("تمت إضافة العميل");
     } else if (selected) {
       updateCustomer(selected.id, form, currentEmployee.fullName);
+      showToast("تم حفظ تعديلات العميل");
     }
-    setSavedFlash(true);
-    setTimeout(() => setSavedFlash(false), 2000);
   }
 
   const sellers = EMPLOYEES.filter((e) => e.role === "seller");
@@ -175,7 +174,6 @@ export function CustomerAssignments() {
                   >
                     {creating ? "إضافة العميل" : "حفظ التعديلات"}
                   </button>
-                  {savedFlash && <span className="text-xs font-semibold text-status-good">تم الحفظ ✓</span>}
                 </div>
               )}
             </div>

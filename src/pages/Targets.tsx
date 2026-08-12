@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
+import { useToast } from "../context/ToastContext";
 import { EMPLOYEES, SELLER_PERFORMANCE } from "../data/mockData";
 
 export function Targets() {
   const { currentEmployee } = useAuth();
   const { monthlyTarget, updateCompanyTarget, updateBranchTarget } = useData();
+  const { showToast } = useToast();
   const [companyInput, setCompanyInput] = useState(String(monthlyTarget.targetSar));
   const [branchInputs, setBranchInputs] = useState<Record<string, string>>(() =>
     Object.fromEntries(monthlyTarget.branchBreakdown.map((b) => [b.branch, String(b.target)])),
   );
-  const [savedFlash, setSavedFlash] = useState<string | null>(null);
 
   if (!currentEmployee) return null;
 
@@ -22,23 +23,18 @@ export function Targets() {
     return currentEmployee!.role === "branch_manager" && currentEmployee!.branch === branch;
   }
 
-  function flash(label: string) {
-    setSavedFlash(label);
-    setTimeout(() => setSavedFlash(null), 2000);
-  }
-
   function saveCompanyTarget() {
     const value = Number(companyInput.replace(/[^\d]/g, ""));
     if (!value || !currentEmployee) return;
     updateCompanyTarget(value, currentEmployee.fullName);
-    flash("company");
+    showToast("تم حفظ هدف الشهر لكل الشركة");
   }
 
   function saveBranchTarget(branch: string) {
     const value = Number((branchInputs[branch] ?? "").replace(/[^\d]/g, ""));
     if (!value || !currentEmployee) return;
     updateBranchTarget(branch, value, currentEmployee.fullName);
-    flash(branch);
+    showToast(`تم حفظ هدف ${branch}`);
   }
 
   const leaderboard = [...SELLER_PERFORMANCE]
@@ -75,7 +71,6 @@ export function Targets() {
           >
             حفظ الهدف
           </button>
-          {savedFlash === "company" && <span className="text-xs font-semibold text-status-good">تم الحفظ ✓</span>}
         </div>
       )}
 
@@ -108,7 +103,6 @@ export function Targets() {
                   </button>
                 </div>
               )}
-              {savedFlash === b.branch && <div className="mt-1 text-xs font-semibold text-status-good">تم الحفظ ✓</div>}
             </div>
           );
         })}

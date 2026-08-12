@@ -85,12 +85,20 @@ export function AuditHub() {
         title="سجل التدقيق"
         description="Who → What → When → Before → After → Approval → Result"
         action={
-          <button
-            onClick={handleExport}
-            className="rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
-          >
-            تصدير CSV
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => window.print()}
+              className="no-print rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
+            >
+              طباعة
+            </button>
+            <button
+              onClick={handleExport}
+              className="no-print rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
+            >
+              تصدير CSV
+            </button>
+          </div>
         }
       >
         <div className="table-scroll overflow-x-auto">

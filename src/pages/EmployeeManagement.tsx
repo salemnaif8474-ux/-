@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { DEFAULT_PERMISSIONS_BY_ROLE, EMPLOYEES, PERMISSION_MODULES } from "../data/mockData";
 import { ROLE_LABELS, type Employee } from "../types";
 import { RatingBadge } from "../components/RatingBadge";
+import { EmptyState } from "../components/EmptyState";
 import { exportToCsv } from "../lib/exportCsv";
 
 const STATUS_LABEL: Record<Employee["status"], { label: string; className: string }> = {
@@ -108,8 +109,8 @@ export function EmployeeManagement() {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-xs text-neutral-400">
-                    لا توجد نتائج مطابقة
+                  <td colSpan={5}>
+                    <EmptyState icon="search" title="لا توجد نتائج مطابقة" hint="جرّب كلمة بحث مختلفة" />
                   </td>
                 </tr>
               )}
