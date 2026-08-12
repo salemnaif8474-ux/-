@@ -1,7 +1,7 @@
 {
-  "name": "نظام إدارة شركة قطع غيار السيارات",
-  "short_name": "قطع غيار",
-  "description": "نظام داخلي لموظفي الشركة",
+  "name": "نظام إدارة شركة دعم المركبات للتجارة",
+  "short_name": "دعم المركبات",
+  "description": "Vehicle Support Trading Co. - نظام داخلي لموظفي الشركة",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

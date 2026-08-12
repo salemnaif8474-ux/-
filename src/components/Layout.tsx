@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Logo } from "./Logo";
-import { COMPANY_NAME, ROLE_HUB_LABEL } from "../data/mockData";
+import { COMPANY_NAME, COMPANY_NAME_EN, ROLE_HUB_LABEL } from "../data/mockData";
 import { NAV_ITEMS } from "../data/navConfig";
 import { ROLE_LABELS } from "../types";
 import { NotificationBell } from "./NotificationBell";
@@ -30,7 +30,7 @@ export function Layout() {
         <Logo size={40} />
         <div>
           <div className="text-sm font-bold text-brand-700">{COMPANY_NAME}</div>
-          <div className="text-xs text-neutral-500">نظام إدارة داخلي</div>
+          <div className="text-[11px] text-neutral-400" dir="ltr">{COMPANY_NAME_EN}</div>
         </div>
       </div>
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">

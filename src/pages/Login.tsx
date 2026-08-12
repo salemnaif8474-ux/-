@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Logo } from "../components/Logo";
 import { BrandPattern } from "../components/BrandPattern";
-import { COMPANY_NAME, EMPLOYEES } from "../data/mockData";
+import { COMPANY_NAME, COMPANY_NAME_EN, EMPLOYEES } from "../data/mockData";
 import { ROLE_LABELS } from "../types";
 
 export function Login() {
@@ -56,7 +56,10 @@ export function Login() {
           <Logo size={96} />
         </div>
         <div className="relative animate-splash-text text-3xl font-bold text-white">{COMPANY_NAME}</div>
-        <div className="relative animate-splash-text text-sm text-white/70">نظام إدارة داخلي شامل</div>
+        <div className="relative animate-splash-text text-sm font-semibold text-white/80" dir="ltr">
+          {COMPANY_NAME_EN}
+        </div>
+        <div className="relative animate-splash-text text-xs text-white/60">نظام إدارة داخلي شامل</div>
         <div className="relative mt-2 h-1 w-40 overflow-hidden rounded-full bg-white/20">
           <div className="animate-splash-bar h-full rounded-full bg-white" />
         </div>
@@ -71,7 +74,10 @@ export function Login() {
         <BrandPattern opacity={0.08} />
         <div className="relative flex items-center gap-3">
           <Logo size={44} />
-          <span className="text-lg font-bold">{COMPANY_NAME}</span>
+          <div>
+            <div className="text-lg font-bold">{COMPANY_NAME}</div>
+            <div className="text-[11px] text-white/70" dir="ltr">{COMPANY_NAME_EN}</div>
+          </div>
         </div>
         <div className="relative">
           <h1 className="text-3xl font-bold leading-tight text-wrap-balance">
@@ -107,7 +113,10 @@ export function Login() {
           <div className="p-8">
             <div className="mb-6 flex flex-col items-center gap-3 lg:hidden">
               <Logo size={64} />
-              <div className="text-lg font-bold text-brand-700">{COMPANY_NAME}</div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-brand-700">{COMPANY_NAME}</div>
+                <div className="text-xs text-neutral-400" dir="ltr">{COMPANY_NAME_EN}</div>
+              </div>
             </div>
             <div className="mb-6 hidden items-center justify-center lg:flex">
               <span className="rounded-full bg-brand-50 px-3 py-1 text-[11px] font-semibold text-brand-700">

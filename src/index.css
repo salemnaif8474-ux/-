@@ -95,6 +95,15 @@ h1, h2, h3 {
   animation: fade-slide-up 0.4s ease-out both;
 }
 
+@keyframes logo-spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-logo-spin {
+  animation: logo-spin 7s linear infinite;
+  transform-origin: 50% 50%;
+}
+
 @keyframes page-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
