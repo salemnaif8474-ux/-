@@ -24,7 +24,7 @@ export function GlobalSearch() {
 
     const employeeResults: Result[] = EMPLOYEES.filter(
       (e) => e.fullName.includes(q) || e.username.includes(q) || e.employeeNumber.includes(q),
-    ).map((e) => ({ key: `emp-${e.id}`, label: e.fullName, sublabel: `موظف · ${ROLE_LABELS[e.role]}`, to: "/employees" }));
+    ).map((e) => ({ key: `emp-${e.id}`, label: e.fullName, sublabel: `موظف · ${ROLE_LABELS[e.role]}`, to: "/app/employees" }));
 
     const customerResults: Result[] = customers
       .filter(
@@ -38,14 +38,14 @@ export function GlobalSearch() {
         key: `cust-${c.id}`,
         label: c.name,
         sublabel: "عميل",
-        to: "/customers",
+        to: "/app/customers",
       }));
 
     const partResults: Result[] = PARTS.filter((p) => p.name.includes(q) || p.partNumber.includes(q)).map((p) => ({
       key: `part-${p.id}`,
       label: p.name,
       sublabel: `قطعة · ${p.partNumber}`,
-      to: "/hub",
+      to: "/app/hub",
     }));
 
     return [...employeeResults, ...customerResults, ...partResults].slice(0, 8);

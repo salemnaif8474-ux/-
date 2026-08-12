@@ -7,9 +7,9 @@ import { RatingBadge } from "../components/RatingBadge";
 import { ROLE_LABELS } from "../types";
 
 const ACTION_SOURCES: { key: keyof typeof CHAT_MESSAGES; label: string; to: string }[] = [
-  { key: "price_changes", label: "طلبات تعديل أسعار بانتظار الموافقة", to: "/chats" },
-  { key: "transfers", label: "حوالات عملاء بانتظار المطابقة", to: "/chats" },
-  { key: "shortages", label: "نواقص مفتوحة لم تُحل بعد", to: "/chats" },
+  { key: "price_changes", label: "طلبات تعديل أسعار بانتظار الموافقة", to: "/app/chats" },
+  { key: "transfers", label: "حوالات عملاء بانتظار المطابقة", to: "/app/chats" },
+  { key: "shortages", label: "نواقص مفتوحة لم تُحل بعد", to: "/app/chats" },
 ];
 
 export function Dashboard() {
@@ -71,14 +71,14 @@ export function Dashboard() {
           </div>
         )}
 
-        <Link to="/chats" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
+        <Link to="/app/chats" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
           <div className="text-xs text-neutral-400">المحادثات</div>
           <div className="mt-1 text-2xl font-bold text-brand-700 tabular-nums">{visibleChatsCount}</div>
           <div className="mt-2 text-xs text-neutral-400">قنوات متخصصة حسب صلاحياتك</div>
         </Link>
 
         {currentEmployee.role === "owner" && (
-          <Link to="/ratings" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
+          <Link to="/app/ratings" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
             <div className="text-xs text-neutral-400">موظفون يحتاجون متابعة</div>
             <div className="mt-1 text-2xl font-bold text-status-bad">{badEmployeesCount}</div>
             <div className="mt-2 text-xs text-neutral-400">اضغط لعرض تقييم الموظفين</div>

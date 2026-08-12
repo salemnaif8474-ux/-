@@ -91,15 +91,15 @@ export function ManagerHub() {
       )}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Link to="/employees" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
+        <Link to="/app/employees" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
           <div className="text-sm font-bold text-neutral-700">الموظفون والصلاحيات</div>
           <div className="mt-1 text-xs text-neutral-400">تعيين الأدوار وتحديد صلاحيات كل موظف</div>
         </Link>
-        <Link to="/targets" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
+        <Link to="/app/targets" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
           <div className="text-sm font-bold text-neutral-700">أهداف المبيعات والفروع</div>
           <div className="mt-1 text-xs text-neutral-400">تحديد ومتابعة أهداف كل فرع وبائع</div>
         </Link>
-        <Link to="/audit" className="rounded-xl border border-status-warn bg-status-warn-bg/40 p-5 transition hover:border-status-warn">
+        <Link to="/app/audit" className="rounded-xl border border-status-warn bg-status-warn-bg/40 p-5 transition hover:border-status-warn">
           <div className="text-sm font-bold text-neutral-800">سجل التدقيق</div>
           <div className="mt-1 text-xs text-neutral-600">
             للاطلاع فقط — لا يملك أي مستخدم، بما فيهم المدير، صلاحية تعديل سجل التدقيق نفسه

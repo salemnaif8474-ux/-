@@ -49,8 +49,8 @@ export function SalesHub() {
         <h1 className="text-xl font-bold text-neutral-800">مركز المبيعات</h1>
         <p className="text-sm text-neutral-500">
           البحث عن القطع، عروض الأسعار وطلبات البيع، توفر المخزون، والمرتجعات — بالإضافة إلى{" "}
-          <Link to="/customers" className="text-brand-700 underline">عملائي</Link> و
-          <Link to="/targets" className="text-brand-700 underline"> أداء المبيعات</Link>.
+          <Link to="/app/customers" className="text-brand-700 underline">عملائي</Link> و
+          <Link to="/app/targets" className="text-brand-700 underline"> أداء المبيعات</Link>.
         </p>
       </div>
 
@@ -150,14 +150,14 @@ export function SalesHub() {
           title="النواقص وطلبات التعويض"
           description="القطع الناقصة وتاريخ الوصول المتوقع"
           action={
-            <Link to="/chats" className="text-xs font-semibold text-brand-700 hover:underline">
+            <Link to="/app/chats" className="text-xs font-semibold text-brand-700 hover:underline">
               فتح شات النواقص ←
             </Link>
           }
         >
           <p className="text-sm text-neutral-600">
             القطع التي وصلت للحد الأدنى تظهر تلقائيًا في{" "}
-            <Link to="/hub" className="text-brand-700 underline">مركز النواقص</Link> ويمكن للبائع طلب أولوية تجهيز
+            <Link to="/app/hub" className="text-brand-700 underline">مركز النواقص</Link> ويمكن للبائع طلب أولوية تجهيز
             من هناك أو عبر شات النواقص مباشرة.
           </p>
         </HubSection>

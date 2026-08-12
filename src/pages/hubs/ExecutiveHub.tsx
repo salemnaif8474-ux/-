@@ -22,7 +22,7 @@ export function ExecutiveHub() {
       <div>
         <h1 className="text-xl font-bold text-neutral-800">اللوحة التنفيذية</h1>
         <p className="text-sm text-neutral-500">
-          مؤشرات ما وراء لوحة <Link to="/" className="text-brand-700 underline">الرئيسية</Link> — الربحية،
+          مؤشرات ما وراء لوحة <Link to="/app" className="text-brand-700 underline">الرئيسية</Link> — الربحية،
           المخزون، الموردين، العملاء، والمخاطر
         </p>
       </div>
@@ -70,7 +70,7 @@ export function ExecutiveHub() {
         <HubSection
           title="تنبيهات المخاطر"
           action={
-            <Link to="/ratings" className="text-xs font-semibold text-brand-700 hover:underline">
+            <Link to="/app/ratings" className="text-xs font-semibold text-brand-700 hover:underline">
               عرض تقييم الموظفين ←
             </Link>
           }
@@ -87,7 +87,7 @@ export function ExecutiveHub() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Link to="/audit" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
+        <Link to="/app/audit" className="rounded-xl border border-brand-100 bg-white p-5 transition hover:border-brand-600">
           <div className="text-sm font-bold text-neutral-700">التدقيق والامتثال</div>
           <div className="mt-1 text-xs text-neutral-400">سجل كل عملية حساسة بالشركة — من قام بها ومتى</div>
         </Link>

@@ -26,7 +26,7 @@ export function Login() {
     };
   }, []);
 
-  if (currentEmployee) return <Navigate to="/" replace />;
+  if (currentEmployee) return <Navigate to="/app" replace />;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,7 +41,7 @@ export function Login() {
     }
     setError("");
     loginAs(emp.id);
-    navigate("/");
+    navigate("/app");
   }
 
   if (showSplash) {
@@ -178,7 +178,7 @@ export function Login() {
                     key={emp.id}
                     onClick={() => {
                       loginAs(emp.id);
-                      navigate("/");
+                      navigate("/app");
                     }}
                     className="rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-xs text-brand-700 hover:bg-brand-100"
                   >

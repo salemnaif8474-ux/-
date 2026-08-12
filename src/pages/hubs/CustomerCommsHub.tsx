@@ -17,7 +17,7 @@ export function CustomerCommsHub() {
         <h1 className="text-xl font-bold text-neutral-800">تواصل العملاء</h1>
         <p className="text-sm text-neutral-500">
           طلبات العملاء، متابعة الطلبات، الشكاوى، وسجل التواصل — إلى جانب{" "}
-          <Link to="/customers" className="text-brand-700 underline">ملفات العملاء</Link>
+          <Link to="/app/customers" className="text-brand-700 underline">ملفات العملاء</Link>
         </p>
       </div>
 

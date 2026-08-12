@@ -20,8 +20,8 @@ export function BranchHub() {
         <h1 className="text-xl font-bold text-neutral-800">إدارة الفرع — {branch}</h1>
         <p className="text-sm text-neutral-500">
           صلاحياتك محدودة بفرعك، إلا إذا منحك المدير صلاحية إضافية. راجع أيضًا{" "}
-          <Link to="/" className="text-brand-700 underline">لوحة الفرع الرئيسية</Link> و
-          <Link to="/targets" className="text-brand-700 underline"> الأهداف</Link>.
+          <Link to="/app" className="text-brand-700 underline">لوحة الفرع الرئيسية</Link> و
+          <Link to="/app/targets" className="text-brand-700 underline"> الأهداف</Link>.
         </p>
       </div>
 
@@ -82,7 +82,7 @@ export function BranchHub() {
 
       <HubSection title="تحويلات المخزون بين الفروع" description="طلب أو استقبال قطع من فروع أخرى بدل الشراء من جديد">
         <p className="text-sm text-neutral-600">
-          تابع طلبات التحويل عبر <Link to="/hub" className="text-brand-700 underline">مركز النواقص</Link> أو من
+          تابع طلبات التحويل عبر <Link to="/app/hub" className="text-brand-700 underline">مركز النواقص</Link> أو من
           خلال الموافقات لدى المدير.
         </p>
       </HubSection>
