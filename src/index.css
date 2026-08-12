@@ -59,6 +59,42 @@ h1, h2, h3 {
   font-variant-numeric: tabular-nums;
 }
 
+@keyframes splash-logo-in {
+  from { opacity: 0; transform: scale(0.82); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes splash-text-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes splash-bar-fill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+@keyframes fade-slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-splash-logo {
+  animation: splash-logo-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-splash-text {
+  animation: splash-text-in 0.5s ease-out 0.15s both;
+}
+
+.animate-splash-bar {
+  animation: splash-bar-fill 1.1s cubic-bezier(0.65, 0, 0.35, 1) 0.2s both;
+}
+
+.animate-fade-slide-up {
+  animation: fade-slide-up 0.4s ease-out both;
+}
+
 *:focus-visible {
   outline: 2px solid var(--color-brand-600);
   outline-offset: 2px;

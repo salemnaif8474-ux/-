@@ -9,13 +9,18 @@ export function Login() {
   const { currentEmployee, loginAs } = useAuth();
   const navigate = useNavigate();
   const [showSplash, setShowSplash] = useState(true);
+  const [splashLeaving, setSplashLeaving] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const t = setTimeout(() => setShowSplash(false), 1400);
-    return () => clearTimeout(t);
+    const leaveTimer = setTimeout(() => setSplashLeaving(true), 1200);
+    const hideTimer = setTimeout(() => setShowSplash(false), 1500);
+    return () => {
+      clearTimeout(leaveTimer);
+      clearTimeout(hideTimer);
+    };
   }, []);
 
   if (currentEmployee) return <Navigate to="/" replace />;
@@ -38,16 +43,25 @@ export function Login() {
 
   if (showSplash) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-brand-700">
-        <Logo size={96} />
-        <div className="text-2xl font-bold text-white">{COMPANY_NAME}</div>
+      <div
+        className={`flex h-screen flex-col items-center justify-center gap-4 bg-brand-700 transition-opacity duration-300 ${
+          splashLeaving ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        <div className="animate-splash-logo">
+          <Logo size={96} />
+        </div>
+        <div className="animate-splash-text text-2xl font-bold text-white">{COMPANY_NAME}</div>
+        <div className="mt-2 h-1 w-40 overflow-hidden rounded-full bg-white/20">
+          <div className="animate-splash-bar h-full rounded-full bg-white" />
+        </div>
       </div>
     );
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-brand-100 bg-white p-8 shadow-sm">
+      <div className="animate-fade-slide-up w-full max-w-sm rounded-2xl border border-brand-100 bg-white p-8 shadow-sm">
         <div className="mb-6 flex flex-col items-center gap-3">
           <Logo size={64} />
           <div className="text-lg font-bold text-brand-700">{COMPANY_NAME}</div>
