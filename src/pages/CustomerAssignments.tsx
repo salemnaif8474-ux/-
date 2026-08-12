@@ -130,7 +130,7 @@ export function CustomerAssignments() {
               <div className="text-sm font-bold text-neutral-800">{creating ? "عميل جديد" : "بيانات العميل"}</div>
 
               <Field label="اسم المنشأة / العميل" value={form.name} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, name: v }))} />
-              <Field label="الجوال" value={form.phone} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, phone: v }))} />
+              <Field label="الجوال" value={form.phone} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, phone: v }))} type="tel" tabular />
 
               <div>
                 <label className="mb-1 block text-xs font-medium text-neutral-500">البائع المسؤول</label>
@@ -150,8 +150,8 @@ export function CustomerAssignments() {
               <div className="border-t border-neutral-100 pt-3">
                 <div className="mb-2 text-xs font-semibold text-neutral-500">بيانات الفوترة الضريبية</div>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <Field label="الرقم الضريبي" value={form.taxNumber ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, taxNumber: v }))} tabular />
-                  <Field label="السجل التجاري" value={form.crNumber ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, crNumber: v }))} tabular />
+                  <Field label="الرقم الضريبي" value={form.taxNumber ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, taxNumber: v }))} tabular inputMode="numeric" />
+                  <Field label="السجل التجاري" value={form.crNumber ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, crNumber: v }))} tabular inputMode="numeric" />
                 </div>
               </div>
 
@@ -159,11 +159,11 @@ export function CustomerAssignments() {
                 <div className="mb-2 text-xs font-semibold text-neutral-500">العنوان الوطني</div>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <Field label="الشارع" value={form.street ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, street: v }))} />
-                  <Field label="رقم المبنى" value={form.buildingNumber ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, buildingNumber: v }))} tabular />
+                  <Field label="رقم المبنى" value={form.buildingNumber ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, buildingNumber: v }))} tabular inputMode="numeric" />
                   <Field label="الحي" value={form.district ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, district: v }))} />
                   <Field label="المدينة" value={form.city ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, city: v }))} />
                   <Field label="المنطقة" value={form.region ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, region: v }))} />
-                  <Field label="الرمز البريدي" value={form.postalCode ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, postalCode: v }))} tabular />
+                  <Field label="الرمز البريدي" value={form.postalCode ?? ""} disabled={!editable} onChange={(v) => setForm((f) => ({ ...f, postalCode: v }))} tabular inputMode="numeric" />
                 </div>
               </div>
 
@@ -192,12 +192,16 @@ function Field({
   onChange,
   disabled,
   tabular,
+  inputMode,
+  type = "text",
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   disabled?: boolean;
   tabular?: boolean;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  type?: string;
 }) {
   return (
     <div>
@@ -206,6 +210,8 @@ function Field({
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
+        inputMode={inputMode}
+        type={type}
         className={`w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:border-brand-600 focus:outline-none disabled:bg-neutral-50 disabled:text-neutral-400 ${tabular ? "tabular-nums" : ""}`}
       />
     </div>

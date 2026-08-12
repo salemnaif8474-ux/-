@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
 import { CHAT_DEFS, CHAT_MESSAGES, EMPLOYEES, EMPLOYEE_MANAGER_THREADS } from "../data/mockData";
 import { getEffectiveThreadId, THREAD_VIEWER_ROLES } from "../lib/chatAccess";
+import { AttachmentIcon } from "../components/icons";
 import type { ChatKey, ChatMessage } from "../types";
 
 const STATUS_STYLES: Record<NonNullable<ChatMessage["status"]>, { label: string; className: string }> = {
@@ -194,12 +195,14 @@ export function Chats() {
                               target="_blank"
                               rel="noreferrer"
                               download={m.attachmentName}
-                              className="rounded bg-neutral-100 px-2 py-0.5 text-[11px] text-brand-700 underline"
+                              className="inline-flex items-center gap-1 rounded bg-neutral-100 px-2 py-0.5 text-[11px] text-brand-700 underline"
                             >
-                              📎 {m.attachmentName ?? "مرفق"}
+                              <AttachmentIcon /> {m.attachmentName ?? "مرفق"}
                             </a>
                           ) : (
-                            <span className="rounded bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500">📎 مرفق</span>
+                            <span className="inline-flex items-center gap-1 rounded bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500">
+                              <AttachmentIcon /> مرفق
+                            </span>
                           )
                         )}
                         {m.status && (
@@ -231,7 +234,9 @@ export function Chats() {
                 <div className="border-t border-neutral-100 p-4">
                   {pendingAttachment && (
                     <div className="mb-2 flex items-center gap-2 text-xs text-neutral-500">
-                      <span className="rounded bg-brand-50 px-2 py-1 text-brand-700">📎 {pendingAttachment.name}</span>
+                      <span className="inline-flex items-center gap-1 rounded bg-brand-50 px-2 py-1 text-brand-700">
+                        <AttachmentIcon /> {pendingAttachment.name}
+                      </span>
                       <button onClick={() => setPendingAttachment(null)} className="text-neutral-400 hover:text-status-bad">
                         إزالة
                       </button>
@@ -250,9 +255,9 @@ export function Chats() {
                         <input ref={fileInputRef} type="file" onChange={handleFileChange} className="hidden" />
                         <button
                           onClick={() => fileInputRef.current?.click()}
-                          className="rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-50"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-50"
                         >
-                          📎 إرفاق
+                          <AttachmentIcon className="h-4 w-4" /> إرفاق
                         </button>
                       </>
                     )}
