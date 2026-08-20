@@ -1,6 +1,8 @@
 import { EMPLOYEES, LEAVE_REQUESTS, NITAQAT_STATUS } from "../../data/mockData";
 import { HubSection } from "../../components/HubSection";
 import { Pill } from "../../components/Pill";
+import { EmptyState } from "../../components/EmptyState";
+import { buildIqamaAlerts, daysUntil } from "../../lib/iqama";
 import { ROLE_LABELS } from "../../types";
 
 const NITAQAT_BAND_LABEL = {
@@ -13,15 +15,12 @@ const NITAQAT_BAND_LABEL = {
 
 const LEAVE_TYPE_LABEL = { annual: "إجازة سنوية", sick: "إجازة مرضية", emergency: "إجازة طارئة" } as const;
 
-function daysUntil(dateStr: string) {
-  const diff = new Date(dateStr).getTime() - new Date("2026-08-09").getTime();
-  return Math.round(diff / (1000 * 60 * 60 * 24));
-}
-
 export function HRHub() {
   const withIqama = EMPLOYEES.filter((e) => e.iqamaExpiry).sort(
     (a, b) => daysUntil(a.iqamaExpiry!) - daysUntil(b.iqamaExpiry!),
   );
+  const alerts = buildIqamaAlerts(EMPLOYEES);
+  const critical = alerts.filter((a) => a.severity === "critical");
 
   return (
     <div className="space-y-6">
@@ -39,9 +38,10 @@ export function HRHub() {
           </div>
         </div>
         <div className="rounded-xl border border-brand-100 bg-white p-5">
-          <div className="text-xs text-neutral-400">إقامات تنتهي خلال 30 يوم</div>
-          <div className="mt-1 text-2xl font-bold text-status-warn tabular-nums">
-            {withIqama.filter((e) => daysUntil(e.iqamaExpiry!) <= 30).length}
+          <div className="text-xs text-neutral-400">إقامات تحتاج إجراء</div>
+          <div className="mt-1 text-2xl font-bold text-status-warn tabular-nums">{alerts.length}</div>
+          <div className="mt-1 text-[11px] text-neutral-400">
+            منها <span className="font-semibold text-status-bad tabular-nums">{critical.length}</span> عاجلة (15 يوم أو أقل)
           </div>
         </div>
         <div className="rounded-xl border border-brand-100 bg-white p-5">
@@ -51,6 +51,36 @@ export function HRHub() {
           </div>
         </div>
       </div>
+
+      <HubSection
+        title="تنبيهات انتهاء الإقامات"
+        description="تنبيه أصفر قبل شهر · تنبيه أحمر عاجل قبل 15 يوم — يصل للموارد البشرية ولصاحب الشركة"
+      >
+        {alerts.length === 0 ? (
+          <EmptyState icon="check" title="ما فيه إقامات قريبة الانتهاء" hint="كل الإقامات سارية لأكثر من شهر" />
+        ) : (
+          <div className="space-y-2">
+            {alerts.map((a) => (
+              <div
+                key={a.employeeId}
+                className={`rounded-lg border p-3 text-sm ${
+                  a.severity === "critical"
+                    ? "border-status-bad bg-status-bad-bg/40"
+                    : "border-status-warn bg-status-warn-bg/40"
+                }`}
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-medium text-neutral-800">{a.message}</span>
+                  <Pill tone={a.severity === "critical" ? "bad" : "warn"}>
+                    {a.severity === "critical" ? "عاجل" : "تنبيه"}
+                  </Pill>
+                </div>
+                <div className="mt-1 text-xs text-neutral-500">تاريخ الانتهاء: {a.expiry}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </HubSection>
 
       <HubSection title="متابعة الإقامات" description="مرتبة حسب الأقرب انتهاءً">
         {withIqama.length === 0 ? (

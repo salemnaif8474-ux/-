@@ -1,6 +1,11 @@
 import { useAuth } from "../context/AuthContext";
-import { DEFAULT_PERMISSIONS_BY_ROLE, PERMISSION_MODULES } from "../data/mockData";
+import {
+  DEFAULT_PERMISSIONS_BY_ROLE,
+  PERFORMANCE_EVALUATIONS,
+  PERMISSION_MODULES,
+} from "../data/mockData";
 import { RatingBadge } from "../components/RatingBadge";
+import { EvaluationCard } from "../components/EvaluationCard";
 import { ROLE_LABELS } from "../types";
 
 export function Profile() {
@@ -8,6 +13,8 @@ export function Profile() {
   if (!currentEmployee) return null;
 
   const myPermissions = DEFAULT_PERMISSIONS_BY_ROLE[currentEmployee.role];
+  // Scoped to the signed-in employee only — nobody can read a colleague's file.
+  const myEvaluation = PERFORMANCE_EVALUATIONS.find((e) => e.employeeId === currentEmployee.id);
 
   return (
     <div className="space-y-4">
@@ -78,6 +85,14 @@ export function Profile() {
           </div>
         </div>
       </div>
+
+      {myEvaluation ? (
+        <EvaluationCard evaluation={myEvaluation} />
+      ) : (
+        <div className="rounded-xl border border-brand-100 bg-white p-5 text-sm text-neutral-500">
+          ما صدر لك تقييم شهري بعد — يظهر هنا أول ما تعتمده الإدارة، ويكون خاصًا بك وحدك.
+        </div>
+      )}
     </div>
   );
 }

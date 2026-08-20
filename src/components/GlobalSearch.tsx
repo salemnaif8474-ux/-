@@ -1,7 +1,9 @@
 import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
 import { EMPLOYEES, PARTS } from "../data/mockData";
+import { can } from "../lib/permissions";
 import { ROLE_LABELS } from "../types";
 
 interface Result {
@@ -12,21 +14,37 @@ interface Result {
 }
 
 export function GlobalSearch() {
-  const { customers } = useData();
+  const { customers, budget } = useData();
+  const { currentEmployee } = useAuth();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
+  // Search must never surface records the signed-in role cannot open — budget
+  // lines are owner-only, staff records need users.manage, and a seller only
+  // ever matches their own customers.
   const results = useMemo<Result[]>(() => {
     const q = query.trim();
-    if (q.length < 2) return [];
+    if (q.length < 2 || !currentEmployee) return [];
+    const role = currentEmployee.role;
 
-    const employeeResults: Result[] = EMPLOYEES.filter(
-      (e) => e.fullName.includes(q) || e.username.includes(q) || e.employeeNumber.includes(q),
-    ).map((e) => ({ key: `emp-${e.id}`, label: e.fullName, sublabel: `موظف · ${ROLE_LABELS[e.role]}`, to: "/employees" }));
+    const employeeResults: Result[] = can(role, "users.manage")
+      ? EMPLOYEES.filter(
+          (e) => e.fullName.includes(q) || e.username.includes(q) || e.employeeNumber.includes(q),
+        ).map((e) => ({
+          key: `emp-${e.id}`,
+          label: e.fullName,
+          sublabel: `موظف · ${ROLE_LABELS[e.role]}`,
+          to: "/employees",
+        }))
+      : [];
 
-    const customerResults: Result[] = customers
+    const visibleCustomers = can(role, "customers.viewAll")
+      ? customers
+      : customers.filter((c) => c.ownerSellerId === currentEmployee.id);
+
+    const customerResults: Result[] = visibleCustomers
       .filter(
         (c) =>
           c.name.includes(q) ||
@@ -41,6 +59,17 @@ export function GlobalSearch() {
         to: "/customers",
       }));
 
+    const budgetResults: Result[] = can(role, "budget.view")
+      ? budget.lines
+          .filter((l) => l.label.includes(q))
+          .map((l) => ({
+            key: `budget-${l.id}`,
+            label: l.label,
+            sublabel: "بند ميزانية",
+            to: "/budget",
+          }))
+      : [];
+
     const partResults: Result[] = PARTS.filter((p) => p.name.includes(q) || p.partNumber.includes(q)).map((p) => ({
       key: `part-${p.id}`,
       label: p.name,
@@ -48,8 +77,8 @@ export function GlobalSearch() {
       to: "/hub",
     }));
 
-    return [...employeeResults, ...customerResults, ...partResults].slice(0, 8);
-  }, [query]);
+    return [...employeeResults, ...customerResults, ...budgetResults, ...partResults].slice(0, 8);
+  }, [query, currentEmployee, customers, budget]);
 
   function openSearch() {
     setOpen(true);

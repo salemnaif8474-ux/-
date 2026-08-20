@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
 import { useToast } from "../context/ToastContext";
 import { EMPLOYEES } from "../data/mockData";
+import { can } from "../lib/permissions";
 import type { Customer } from "../types";
 
 const EMPTY_FORM: Omit<Customer, "id"> = {
@@ -21,7 +22,7 @@ const EMPTY_FORM: Omit<Customer, "id"> = {
 
 export function CustomerAssignments() {
   const { currentEmployee } = useAuth();
-  const { customers, updateCustomer, addCustomer } = useData();
+  const { customers, updateCustomer, addCustomer, requestCustomer, customerRequests } = useData();
   const { showToast } = useToast();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
@@ -29,7 +30,12 @@ export function CustomerAssignments() {
 
   if (!currentEmployee) return null;
 
-  const canSeeAll = ["owner", "manager", "branch_manager"].includes(currentEmployee.role);
+  const canSeeAll = can(currentEmployee.role, "customers.viewAll");
+  const canApprove = can(currentEmployee.role, "customers.approve");
+  const canRequest = can(currentEmployee.role, "customers.requestAdd");
+  const myPendingRequests = customerRequests.filter(
+    (r) => r.status === "pending" && r.requestedBy === currentEmployee.id,
+  );
   const visibleCustomers = canSeeAll
     ? customers
     : customers.filter((c) => c.ownerSellerId === currentEmployee.id || c.ownerSellerId === null);
@@ -61,9 +67,20 @@ export function CustomerAssignments() {
   function handleSave() {
     if (!form.name.trim() || !currentEmployee) return;
     if (creating) {
-      addCustomer({ id: `c-${Date.now()}`, ...form }, currentEmployee.fullName);
+      // Only the owner may create a customer outright; everyone else files a
+      // request that the owner has to approve first.
+      if (canApprove) {
+        addCustomer({ id: `c-${Date.now()}`, ...form }, currentEmployee.fullName);
+        showToast("تمت إضافة العميل");
+      } else {
+        requestCustomer({
+          requestedBy: currentEmployee.id,
+          requestedByName: currentEmployee.fullName,
+          customer: form,
+        });
+        showToast("تم إرسال طلب إضافة العميل لاعتماد صاحب الشركة");
+      }
       setCreating(false);
-      showToast("تمت إضافة العميل");
     } else if (selected) {
       updateCustomer(selected.id, form, currentEmployee.fullName);
       showToast("تم حفظ تعديلات العميل");
@@ -81,15 +98,26 @@ export function CustomerAssignments() {
           <h1 className="text-xl font-bold text-neutral-800">{canSeeAll ? "عملاء الشركة" : "عملائي"}</h1>
           <p className="text-sm text-neutral-500">كل عميل ثابت له بائع مسؤول عنه، والعملاء العابرون يقدر يخدمهم أي بائع</p>
         </div>
-        {canSeeAll && (
+        {(canApprove || canRequest) && (
           <button
             onClick={openCreate}
             className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700"
           >
-            + إضافة عميل
+            {canApprove ? "+ إضافة عميل" : "+ طلب إضافة عميل"}
           </button>
         )}
       </div>
+
+      {!canApprove && canRequest && (
+        <div className="rounded-xl border border-status-warn bg-status-warn-bg/40 p-4 text-xs text-neutral-700">
+          إضافة أي عميل جديد تحتاج اعتماد صاحب الشركة — يُرسل طلبك ويُضاف العميل بعد الموافقة فقط.
+          {myPendingRequests.length > 0 && (
+            <div className="mt-2 font-semibold">
+              طلباتك المعلّقة: {myPendingRequests.map((r) => r.customer.name).join("، ")}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="overflow-x-auto rounded-xl border border-brand-100 bg-white lg:col-span-2">

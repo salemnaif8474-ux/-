@@ -13,6 +13,7 @@ import { EmployeeManagement } from "./pages/EmployeeManagement";
 import { Targets } from "./pages/Targets";
 import { Profile } from "./pages/Profile";
 import { Hub } from "./pages/Hub";
+import { Budget } from "./pages/Budget";
 import { AuditHub } from "./pages/hubs/AuditHub";
 import { ROLES_EXCEPT_PREPARER } from "./data/navConfig";
 
@@ -37,7 +38,7 @@ export default function App() {
               <Route
                 path="/customers"
                 element={
-                  <ProtectedRoute roles={["seller", "owner", "manager", "branch_manager"]}>
+                  <ProtectedRoute roles={["seller", "owner", "manager", "branch_manager", "customer_relations"]}>
                     <CustomerAssignments />
                   </ProtectedRoute>
                 }
@@ -55,6 +56,14 @@ export default function App() {
                 element={
                   <ProtectedRoute roles={["owner", "manager", "it", "hr"]}>
                     <EmployeeManagement />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/budget"
+                element={
+                  <ProtectedRoute capability="budget.view">
+                    <Budget />
                   </ProtectedRoute>
                 }
               />

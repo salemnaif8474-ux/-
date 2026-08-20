@@ -3,16 +3,21 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Logo } from "../components/Logo";
 import { BrandPattern } from "../components/BrandPattern";
-import { COMPANY_NAME, COMPANY_NAME_EN, EMPLOYEES } from "../data/mockData";
-import { ROLE_LABELS } from "../types";
+import { COMPANY_NAME, COMPANY_NAME_EN, DEMO_PASSWORD, EMPLOYEES } from "../data/mockData";
+import { useData } from "../context/DataContext";
+import { LOGIN_FAILURE_MESSAGE, verifyLogin } from "../lib/credentials";
+import { ALL_ROLES } from "../data/navConfig";
+import { ROLE_LABELS, type Role } from "../types";
 
 export function Login() {
   const { currentEmployee, loginAs } = useAuth();
+  const { recordSecurityEvent } = useData();
   const navigate = useNavigate();
   const [showSplash, setShowSplash] = useState(true);
   const [splashLeaving, setSplashLeaving] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState<Role | "">("");
   const [error, setError] = useState("");
 
   const branchCount = useMemo(() => new Set(EMPLOYEES.map((e) => e.branch)).size, []);
@@ -28,19 +33,36 @@ export function Login() {
 
   if (currentEmployee) return <Navigate to="/" replace />;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const emp = EMPLOYEES.find((x) => x.username === username.trim());
-    if (!emp) {
-      setError("اسم المستخدم غير صحيح");
-      return;
-    }
-    if (!password) {
-      setError("الرجاء إدخال كلمة المرور");
+    const result = await verifyLogin(EMPLOYEES, username, password, selectedRole);
+    if (!result.ok) {
+      setError(LOGIN_FAILURE_MESSAGE[result.reason]);
+      recordSecurityEvent({
+        category: "تدقيق الصلاحيات",
+        who: username.trim() || "غير معروف",
+        action:
+          result.reason === "role_mismatch"
+            ? `محاولة دخول بدور غير مصرّح به: ${selectedRole ? ROLE_LABELS[selectedRole] : "لم يُحدد"}`
+            : "محاولة دخول فاشلة",
+        before: "-",
+        after: LOGIN_FAILURE_MESSAGE[result.reason],
+        approvedBy: "-",
+        result: "flagged",
+      });
       return;
     }
     setError("");
-    loginAs(emp.id);
+    recordSecurityEvent({
+      category: "تدقيق الصلاحيات",
+      who: result.employee.fullName,
+      action: `تسجيل دخول ناجح بدور ${ROLE_LABELS[result.employee.role]}`,
+      before: "-",
+      after: "جلسة نشطة",
+      approvedBy: "-",
+      result: "cleared",
+    });
+    loginAs(result.employee.id);
     navigate("/");
   }
 
@@ -158,6 +180,24 @@ export function Login() {
                   />
                 </div>
               </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-neutral-600">الدور الوظيفي</label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value as Role | "")}
+                  className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:border-brand-600 focus:outline-none"
+                >
+                  <option value="">اختر دورك الوظيفي</option>
+                  {ALL_ROLES.map((role) => (
+                    <option key={role} value={role}>
+                      {ROLE_LABELS[role]}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-[11px] text-neutral-400">
+                  اختيار دور غير دورك المعتمد لن يمنحك أي صلاحية إضافية — وتُسجَّل المحاولة
+                </p>
+              </div>
               {error && <div className="text-xs font-medium text-status-bad">{error}</div>}
               <p className="text-[11px] leading-relaxed text-neutral-400">
                 حسابك مربوط بجهاز جوال العمل المسجّل فقط — الدخول من جهاز آخر يحتاج موافقة IT
@@ -171,14 +211,18 @@ export function Login() {
             </form>
 
             <div className="mt-6 border-t border-neutral-100 pt-4">
-              <div className="mb-2 text-xs text-neutral-400">دخول تجريبي سريع (للمعاينة فقط):</div>
+              <div className="mb-2 text-xs text-neutral-400">
+                تعبئة سريعة للمعاينة — كلمة المرور للجميع:{" "}
+                <span className="font-bold text-brand-700" dir="ltr">{DEMO_PASSWORD}</span>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {EMPLOYEES.map((emp) => (
                   <button
                     key={emp.id}
                     onClick={() => {
-                      loginAs(emp.id);
-                      navigate("/");
+                      setUsername(emp.username);
+                      setSelectedRole(emp.role);
+                      setError("");
                     }}
                     className="rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-xs text-brand-700 hover:bg-brand-100"
                   >

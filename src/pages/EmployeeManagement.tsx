@@ -4,6 +4,10 @@ import { ROLE_LABELS, type Employee } from "../types";
 import { RatingBadge } from "../components/RatingBadge";
 import { EmptyState } from "../components/EmptyState";
 import { exportToCsv } from "../lib/exportCsv";
+import { useAuth } from "../context/AuthContext";
+import { useData } from "../context/DataContext";
+import { useToast } from "../context/ToastContext";
+import { can } from "../lib/permissions";
 
 const STATUS_LABEL: Record<Employee["status"], { label: string; className: string }> = {
   active: { label: "نشط", className: "bg-status-good-bg text-status-good" },
@@ -12,6 +16,9 @@ const STATUS_LABEL: Record<Employee["status"], { label: string; className: strin
 };
 
 export function EmployeeManagement() {
+  const { currentEmployee } = useAuth();
+  const { recordSecurityEvent } = useData();
+  const { showToast } = useToast();
   const [selected, setSelected] = useState<Employee | null>(null);
   const [query, setQuery] = useState("");
   const [permissionsByEmployee, setPermissionsByEmployee] = useState<Record<string, Set<string>>>(() =>
@@ -26,13 +33,40 @@ export function EmployeeManagement() {
     );
   }, [query]);
 
-  function togglePermission(employeeId: string, moduleKey: string) {
+  const canEditPermissions = can(currentEmployee?.role, "permissions.edit");
+  const canResetPassword = can(currentEmployee?.role, "users.resetPassword");
+
+  function togglePermission(employee: Employee, moduleKey: string) {
+    const moduleLabel = PERMISSION_MODULES.find((m) => m.key === moduleKey)?.label ?? moduleKey;
+    const had = permissionsByEmployee[employee.id]?.has(moduleKey) ?? false;
     setPermissionsByEmployee((prev) => {
-      const next = new Set(prev[employeeId]);
+      const next = new Set(prev[employee.id]);
       if (next.has(moduleKey)) next.delete(moduleKey);
       else next.add(moduleKey);
-      return { ...prev, [employeeId]: next };
+      return { ...prev, [employee.id]: next };
     });
+    recordSecurityEvent({
+      category: "تدقيق الصلاحيات",
+      who: currentEmployee!.fullName,
+      action: `${had ? "سحب" : "منح"} صلاحية "${moduleLabel}" لـ ${employee.fullName}`,
+      before: had ? "ممنوحة" : "غير ممنوحة",
+      after: had ? "غير ممنوحة" : "ممنوحة",
+      approvedBy: currentEmployee!.fullName,
+      result: "cleared",
+    });
+  }
+
+  function resetPassword(employee: Employee) {
+    recordSecurityEvent({
+      category: "تدقيق الصلاحيات",
+      who: currentEmployee!.fullName,
+      action: `إعادة تعيين كلمة مرور ${employee.fullName}`,
+      before: "كلمة مرور سابقة",
+      after: "كلمة مرور مؤقتة — يلزم تغييرها بأول دخول",
+      approvedBy: currentEmployee!.fullName,
+      result: "cleared",
+    });
+    showToast("تم إرسال كلمة مرور مؤقتة وتسجيل العملية بسجل التدقيق");
   }
 
   function handleExport() {
@@ -136,27 +170,50 @@ export function EmployeeManagement() {
                 <Row label="تاريخ التعيين" value={selected.hireDate} />
                 <Row label="جهاز الدخول المرتبط" value={selected.boundDevice ?? "غير مسجّل"} />
               </dl>
+              {canResetPassword && (
+                <div className="border-t border-neutral-100 pt-3">
+                  <button
+                    onClick={() => resetPassword(selected)}
+                    className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-600 hover:bg-neutral-50"
+                  >
+                    إعادة تعيين كلمة المرور
+                  </button>
+                  <p className="mt-1.5 text-[11px] text-neutral-400">
+                    كلمات المرور مخزّنة مشفّرة ولا يمكن عرضها لأي مستخدم — يمكن فقط إعادة تعيينها.
+                  </p>
+                </div>
+              )}
               <div className="border-t border-neutral-100 pt-3">
-                <div className="mb-2 text-xs font-semibold text-neutral-500">الصلاحيات (يحددها المدير)</div>
+                <div className="mb-2 text-xs font-semibold text-neutral-500">
+                  الصلاحيات {canEditPermissions ? "(يحددها صاحب الشركة)" : "(للعرض فقط)"}
+                </div>
                 <div className="space-y-1.5">
                   {PERMISSION_MODULES.map((m) => {
                     const checked = permissionsByEmployee[selected.id]?.has(m.key) ?? false;
                     return (
                       <label
                         key={m.key}
-                        className="flex cursor-pointer items-center justify-between rounded-lg border border-neutral-100 px-3 py-2 text-sm hover:bg-neutral-50"
+                        className={`flex items-center justify-between rounded-lg border border-neutral-100 px-3 py-2 text-sm ${
+                          canEditPermissions ? "cursor-pointer hover:bg-neutral-50" : "opacity-70"
+                        }`}
                       >
                         <span className="text-neutral-700">{m.label}</span>
                         <input
                           type="checkbox"
                           checked={checked}
-                          onChange={() => togglePermission(selected.id, m.key)}
+                          disabled={!canEditPermissions}
+                          onChange={() => togglePermission(selected, m.key)}
                           className="h-4 w-4 accent-brand-600"
                         />
                       </label>
                     );
                   })}
                 </div>
+                {!canEditPermissions && (
+                  <p className="mt-2 text-[11px] text-neutral-400">
+                    تعديل الصلاحيات من صلاحية صاحب الشركة وحده.
+                  </p>
+                )}
               </div>
             </div>
           )}

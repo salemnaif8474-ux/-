@@ -52,6 +52,8 @@ export interface Employee {
   monthlyRatings?: MonthlyRating[];
   boundDevice?: string | null;
   iqamaExpiry?: string;
+  passwordHash?: string;
+  allowedSupplierIds?: string[];
 }
 
 export type ChatKey =
@@ -162,6 +164,53 @@ export interface Supplier {
   leadTimeDays: number;
   rating: RatingColor;
   contact: string;
+  approved: boolean;
+}
+
+export interface SupplierViolation {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  supplierId: string;
+  supplierName: string;
+  parts: string;
+  amount: number;
+  date: string;
+  status: "held" | "approved" | "rejected";
+}
+
+export interface CustomerRequest {
+  id: string;
+  requestedBy: string;
+  requestedByName: string;
+  customer: Omit<Customer, "id">;
+  status: "pending" | "approved" | "rejected";
+  date: string;
+}
+
+export interface BudgetLine {
+  id: string;
+  label: string;
+  allocated: number;
+  spent: number;
+}
+
+export interface CompanyBudget {
+  fiscalYear: string;
+  totalAllocated: number;
+  lines: BudgetLine[];
+}
+
+export interface PerformanceEvaluation {
+  employeeId: string;
+  month: string;
+  score: number;
+  targetAchievedPct: number;
+  strengths: string[];
+  issues: string[];
+  improvements: string[];
+  managerComment: string;
+  status: RatingColor;
 }
 
 export type PurchaseOrderStatus = "requested" | "approved" | "ordered" | "partially_received" | "received" | "matched";

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
 import { CHAT_MESSAGES, EMPLOYEES, IT_TICKETS, LEAVE_REQUESTS } from "../data/mockData";
+import { buildIqamaAlerts } from "../lib/iqama";
 import { EmptyState } from "./EmptyState";
 
 interface NotificationItem {
@@ -14,9 +15,11 @@ interface NotificationItem {
 
 export function NotificationBell() {
   const { currentEmployee } = useAuth();
-  const { approvals } = useData();
+  const { approvals, supplierViolations, customerRequests } = useData();
   const [open, setOpen] = useState(false);
   if (!currentEmployee) return null;
+
+  const iqamaAlerts = buildIqamaAlerts(EMPLOYEES);
 
   const items: NotificationItem[] = [
     {
@@ -59,6 +62,30 @@ export function NotificationBell() {
       label: "موظفون يحتاجون متابعة",
       count: EMPLOYEES.filter((e) => e.rating === "bad").length,
       to: "/ratings",
+      roles: ["owner"],
+    },
+    {
+      label: "إقامات تنتهي خلال 15 يوم (عاجل)",
+      count: iqamaAlerts.filter((a) => a.severity === "critical").length,
+      to: "/hub",
+      roles: ["hr", "owner"],
+    },
+    {
+      label: "إقامات تنتهي خلال شهر",
+      count: iqamaAlerts.filter((a) => a.severity === "warning").length,
+      to: "/hub",
+      roles: ["hr", "owner"],
+    },
+    {
+      label: "محاولات شراء من موردين غير معتمدين",
+      count: supplierViolations.filter((v) => v.status === "held").length,
+      to: "/hub",
+      roles: ["owner"],
+    },
+    {
+      label: "طلبات إضافة عملاء بانتظار اعتمادك",
+      count: customerRequests.filter((r) => r.status === "pending").length,
+      to: "/hub",
       roles: ["owner"],
     },
   ];

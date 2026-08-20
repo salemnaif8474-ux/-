@@ -3,22 +3,32 @@ import type {
   AuditLogEntry,
   ChatDef,
   ChatMessage,
+  CompanyBudget,
   Customer,
+  CustomerRequest,
   Employee,
   ITTicket,
   LeaveRequest,
   MonthlyTargetState,
   NitaqatStatus,
   Part,
+  PerformanceEvaluation,
   PurchaseOrder,
   ReturnRequest,
   Role,
   SalesDoc,
   Supplier,
+  SupplierViolation,
 } from "../types";
 
 export const COMPANY_NAME = "شركة دعم المركبات للتجارة";
 export const COMPANY_NAME_EN = "Vehicle Support Trading Co.";
+
+// Demo credential only. Stored as a SHA-256 hash so no plain-text password
+// exists anywhere in the app; in production each employee gets their own hash
+// from the server and it is never shipped to the browser.
+export const DEMO_PASSWORD = "demo1234";
+const DEMO_PASSWORD_HASH = "0ead2060b65992dca4769af601a1b3a35ef38cfad2c2c465bb160ea764157c5d";
 
 export const EMPLOYEES: Employee[] = [
   {
@@ -34,6 +44,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "good",
     ratingNote: "يلتزم بالتعليمات ويتعلم من أخطائه بسرعة",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [{ date: "2026-05-10", note: "خطأ بسيط بفاتورة، تم تصحيحه فورًا وما تكرر" }],
     monthlyRatings: [
       { month: "2026-05", rating: "warn", note: "خطأ بفاتورة، لكن تم تصحيحه فورًا" },
@@ -56,6 +67,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "bad",
     ratingNote: "أخطاء متكررة بنفس النوع (تجهيز طلبات خاطئة) بدون تحسن",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [
       { date: "2026-04-02", note: "تجهيز قطعة خاطئة للعميل" },
       { date: "2026-05-20", note: "نفس الخطأ تكرر" },
@@ -83,6 +95,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "good",
     ratingNote: "إدارة فرع منظمة ومتابعة جيدة للفريق",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [],
     monthlyRatings: [
       { month: "2026-05", rating: "good", note: "-" },
@@ -105,6 +118,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "warn",
     ratingNote: "أداء متذبذب، أحيانًا ملتزم وأحيانًا يخطئ بالأسعار",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [{ date: "2026-06-05", note: "أدخل سعر قطعة خاطئ بدون مراجعة" }],
     monthlyRatings: [
       { month: "2026-05", rating: "good", note: "-" },
@@ -127,6 +141,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "good",
     ratingNote: "دقيقة بمطابقة الحوالات والصناديق",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [],
   },
   {
@@ -142,6 +157,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "good",
     ratingNote: "-",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [],
   },
   {
@@ -157,6 +173,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "good",
     ratingNote: "-",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [],
   },
   {
@@ -172,6 +189,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "good",
     ratingNote: "-",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [],
   },
   {
@@ -187,8 +205,10 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "warn",
     ratingNote: "أحيانًا يتأخر بمتابعة طلبات الموردين",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [{ date: "2026-05-01", note: "تأخر بطلب توريد فلاتر" }],
     iqamaExpiry: "2026-08-20",
+    allowedSupplierIds: ["s1", "s2"],
   },
   {
     id: "e9",
@@ -203,6 +223,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "good",
     ratingNote: "-",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [],
   },
   {
@@ -218,6 +239,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "good",
     ratingNote: "-",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [],
   },
   {
@@ -233,6 +255,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "warn",
     ratingNote: "ردود متأخرة أحيانًا على استفسارات العملاء",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [{ date: "2026-06-10", note: "تأخر بالرد على شكوى عميل يومين" }],
   },
   {
@@ -248,6 +271,7 @@ export const EMPLOYEES: Employee[] = [
     status: "active",
     rating: "good",
     ratingNote: "-",
+    passwordHash: DEMO_PASSWORD_HASH,
     mistakesLog: [],
   },
 ];
@@ -563,9 +587,93 @@ export const RETURN_REQUESTS: ReturnRequest[] = [
 ];
 
 export const SUPPLIERS: Supplier[] = [
-  { id: "s1", name: "مجموعة التوريد الخليجية", category: "قطع أصلية تويوتا/لكزس", leadTimeDays: 5, rating: "good", contact: "sales@gulfsupply.example" },
-  { id: "s2", name: "المتحدة لقطع الغيار", category: "بطاريات وزيوت", leadTimeDays: 2, rating: "good", contact: "orders@unitedparts.example" },
-  { id: "s3", name: "شركة النجم للاستيراد", category: "قطع بديلة متنوعة", leadTimeDays: 12, rating: "warn", contact: "info@najmimport.example" },
+  { id: "s1", name: "مجموعة التوريد الخليجية", category: "قطع أصلية تويوتا/لكزس", leadTimeDays: 5, rating: "good", contact: "sales@gulfsupply.example", approved: true },
+  { id: "s2", name: "المتحدة لقطع الغيار", category: "بطاريات وزيوت", leadTimeDays: 2, rating: "good", contact: "orders@unitedparts.example", approved: true },
+  { id: "s3", name: "شركة النجم للاستيراد", category: "قطع بديلة متنوعة", leadTimeDays: 12, rating: "warn", contact: "info@najmimport.example", approved: false },
+];
+
+export const COMPANY_BUDGET: CompanyBudget = {
+  fiscalYear: "2026",
+  totalAllocated: 8_400_000,
+  lines: [
+    { id: "b1", label: "شراء المخزون وقطع الغيار", allocated: 5_200_000, spent: 3_410_000 },
+    { id: "b2", label: "الرواتب والأجور", allocated: 1_850_000, spent: 1_233_000 },
+    { id: "b3", label: "إيجارات الفروع والمستودعات", allocated: 620_000, spent: 413_000 },
+    { id: "b4", label: "التشغيل والصيانة", allocated: 340_000, spent: 187_500 },
+    { id: "b5", label: "التسويق وعلاقات العملاء", allocated: 240_000, spent: 96_000 },
+    { id: "b6", label: "تقنية المعلومات والأنظمة", allocated: 150_000, spent: 88_400 },
+  ],
+};
+
+export const SUPPLIER_VIOLATIONS: SupplierViolation[] = [
+  {
+    id: "sv1",
+    employeeId: "e8",
+    employeeName: "بندر علي عسيري",
+    supplierId: "s3",
+    supplierName: "شركة النجم للاستيراد",
+    parts: "أذرعة تعليق أمامية — 40 قطعة",
+    amount: 46_800,
+    date: "2026-08-17",
+    status: "held",
+  },
+];
+
+export const CUSTOMER_REQUESTS: CustomerRequest[] = [
+  {
+    id: "cr1",
+    requestedBy: "e1",
+    requestedByName: "أحمد سالم القحطاني",
+    customer: {
+      name: "ورشة الديار الحديثة",
+      phone: "0553311220",
+      ownerSellerId: "e1",
+      taxNumber: "310445566700003",
+      crNumber: "1010556677",
+      street: "طريق الملك عبدالعزيز",
+      district: "حي الملقا",
+      city: "الرياض",
+      region: "منطقة الرياض",
+    },
+    status: "pending",
+    date: "2026-08-18",
+  },
+];
+
+export const PERFORMANCE_EVALUATIONS: PerformanceEvaluation[] = [
+  {
+    employeeId: "e1",
+    month: "2026-08",
+    score: 92,
+    targetAchievedPct: 108,
+    strengths: ["أعلى مبيعات بالفرع", "التزام كامل بسياسة الخصومات", "متابعة ممتازة للعملاء"],
+    issues: [],
+    improvements: ["تحسّن واضح مقارنة بمايو بعد معالجة خطأ الفواتير"],
+    managerComment: "أداء ممتاز ومستقر — مرشح لمكافأة الربع",
+    status: "good",
+  },
+  {
+    employeeId: "e2",
+    month: "2026-08",
+    score: 58,
+    targetAchievedPct: 71,
+    strengths: ["سرعة في تجهيز الطلبات"],
+    issues: ["تجاوز حد الخصم بدون اعتماد مرتين", "تأخر بإقفال الصندوق"],
+    improvements: ["تحسّن بسيط عن يوليو بعد التنبيه"],
+    managerComment: "يحتاج متابعة مباشرة من مسؤول الفرع هذا الشهر",
+    status: "bad",
+  },
+  {
+    employeeId: "e8",
+    month: "2026-08",
+    score: 74,
+    targetAchievedPct: 88,
+    strengths: ["تفاوض جيد على أسعار الموردين"],
+    issues: ["محاولة شراء من مورد غير معتمد"],
+    improvements: ["التزام أفضل بدورة أوامر الشراء عن الشهر الماضي"],
+    managerComment: "يلتزم بقائمة الموردين المعتمدة فقط",
+    status: "warn",
+  },
 ];
 
 export const PURCHASE_ORDERS: PurchaseOrder[] = [
